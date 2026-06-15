@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum Category {
+  FOOD
+  TRANSPORT
+  SHOPPING
+  ENTERTAINMENT
+  UTILITIES
+  OTHER
+}
+
+enum DisputeReason {
+  UNAUTHORISED
+  DUPLICATE
+  INCORRECT_AMOUNT
+  SERVICE_NOT_RECEIVED
+  OTHER
+}
+
+enum DisputeStatus {
+  PENDING
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         Role      @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+
+  transactions  Transaction[]
+  disputes      Dispute[]
+  disputeEvents DisputeEvent[]
+}
+
+model Transaction {
+  id          String    @id @default(uuid())
+  userId      String
+  amount      Decimal   @db.Decimal(10, 2)
+  merchant    String
+  category    Category
+  date        DateTime
+  description String
+  createdAt   DateTime  @default(now())
+
+  user    User     @relation(fields: [userId], references: [id])
+  dispute Dispute?
+
+  // Composite index: most common query is a user's transactions sorted by date
+  @@index([userId, date])
+}
+
+model Dispute {
+  id            String        @id @default(uuid())
+  transactionId String        @unique
+  userId        String
+  reason        DisputeReason
+  description   String
+  status        DisputeStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  transaction Transaction    @relation(fields: [transactionId], references: [id])
+  user        User           @relation(fields: [userId], references: [id])
+  events      DisputeEvent[]
+
+  // Composite index: filter a user's disputes by status
+  @@index([userId, status])
+}
+
+model DisputeEvent {
+  id         String        @id @default(uuid())
+  disputeId  String
+  fromStatus DisputeStatus
+  toStatus   DisputeStatus
+  note       String
+  actorId    String
+  createdAt  DateTime      @default(now())
+
+  dispute Dispute @relation(fields: [disputeId], references: [id])
+  actor   User    @relation(fields: [actorId], references: [id])
+
+  // Index: fast audit trail lookups per dispute
+  @@index([disputeId])
+}
