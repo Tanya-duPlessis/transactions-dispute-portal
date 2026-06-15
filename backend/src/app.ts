@@ -1,0 +1,38 @@
+import 'dotenv/config';
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { requestLogger } from './middleware/requestLogger';
+import { errorHandler } from './middleware/errorHandler';
+import { authRoutes } from './routes/auth.routes';
+import { transactionRoutes } from './routes/transaction.routes';
+import { disputeRoutes } from './routes/dispute.routes';
+import { setupSwagger } from './docs/swagger';
+
+const app = express();
+
+app.use(helmet());
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN || 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+app.use(express.json());
+app.use(cookieParser());
+app.use(requestLogger);
+
+setupSwagger(app);
+
+app.get('/api/v1/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/transactions', transactionRoutes);
+app.use('/api/v1/disputes', disputeRoutes);
+
+app.use(errorHandler);
+
+export default app;
