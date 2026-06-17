@@ -92,40 +92,16 @@ export default function AdminDisputesPage() {
         subtitle="Review and manage disputes across all customers"
       />
 
-      {/* Summary chips */}
-      <Box sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap' }}>
-        {STATUS_COUNTS_CONFIG.map(({ status: s, label, color, bg, darkBg }) => {
-          const isActive = status === s;
-          return (
-            <Chip
-              key={s}
-              label={`${countByStatus(s)} ${label}`}
-              size="small"
-              onClick={() => setParam('status', isActive ? '' : s)}
-              sx={{
-                bgcolor: isActive ? color : (isDark ? darkBg : bg),
-                color: isActive ? '#fff' : (isDark ? '#E8EAF0' : color),
-                fontWeight: 600,
-                borderRadius: 6,
-                cursor: 'pointer',
-                border: 'none',
-                transition: 'all 0.15s ease',
-                boxShadow: isActive ? `0 2px 8px ${color}44` : 'none',
-              }}
-            />
-          );
-        })}
-      </Box>
-
-      {/* Search + clear */}
-      <Card elevation={0} sx={{ mb: 3, p: 2.5 }}>
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+      {/* Unified toolbar */}
+      <Card elevation={0} sx={{ mb: 3 }}>
+        {/* Search row */}
+        <Box sx={{ px: 2.5, pt: 2.5, pb: 2 }}>
           <TextField
-            placeholder="Search by customer or merchant..."
+            placeholder="Search by customer, merchant or reference..."
             value={search}
             onChange={(e) => setParam('search', e.target.value)}
             size="small"
-            sx={{ minWidth: 280 }}
+            fullWidth
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -141,14 +117,43 @@ export default function AdminDisputesPage() {
               ) : null,
             }}
           />
+        </Box>
+
+        {/* Divider + filter chips row */}
+        <Box sx={{ borderTop: '1px solid', borderColor: 'divider', px: 2.5, py: 1.5, display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+          <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mr: 0.5 }}>
+            Filter:
+          </Typography>
+          {STATUS_COUNTS_CONFIG.map(({ status: s, label, color, bg, darkBg }) => {
+            const isActive = status === s;
+            return (
+              <Chip
+                key={s}
+                label={label}
+                size="small"
+                onClick={() => setParam('status', isActive ? '' : s)}
+                sx={{
+                  bgcolor: isActive ? color : (isDark ? darkBg : bg),
+                  color: isActive ? '#fff' : (isDark ? '#E8EAF0' : color),
+                  fontWeight: 600,
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  border: 'none',
+                  transition: 'all 0.15s ease',
+                  boxShadow: isActive ? `0 2px 8px ${color}44` : 'none',
+                  fontSize: '0.75rem',
+                }}
+              />
+            );
+          })}
           {status && (
             <Button
               size="small"
               variant="text"
               onClick={() => setParam('status', '')}
-              sx={{ color: 'text.secondary', borderRadius: 2 }}
+              sx={{ ml: 'auto', color: 'text.secondary', borderRadius: 2, fontSize: '0.75rem' }}
             >
-              Clear filter
+              Clear
             </Button>
           )}
         </Box>
