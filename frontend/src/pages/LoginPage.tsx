@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -250,6 +250,26 @@ export default function LoginPage() {
             >
               Click to auto-fill credentials
             </Typography>
+
+            <Stack direction="row" justifyContent="center" alignItems="center" spacing={1} sx={{ mt: 3 }}>
+              <Typography variant="body2" color="text.secondary">
+                New to Resolve?
+              </Typography>
+              <Chip
+                label="Create account"
+                size="small"
+                component={Link}
+                to="/register"
+                clickable
+                variant="outlined"
+                sx={{
+                  borderRadius: 2,
+                  fontSize: '0.75rem',
+                  borderColor: 'divider',
+                  '&:hover': { borderColor: '#2563EB', color: '#2563EB', bgcolor: 'transparent' },
+                }}
+              />
+            </Stack>
           </Box>
         </Card>
       </Box>
