@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
-  CardContent,
   TextField,
   Button,
   Typography,
@@ -12,6 +11,7 @@ import {
   IconButton,
   Divider,
   Chip,
+  Stack,
 } from '@mui/material';
 import { Visibility, VisibilityOff, DarkMode, LightMode } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
@@ -80,11 +80,8 @@ export default function LoginPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        bgcolor: 'background.default',
         px: 2,
-        background:
-          mode === 'dark'
-            ? 'linear-gradient(145deg, #0A0F1E 0%, #0D1B3E 50%, #0A1628 100%)'
-            : 'linear-gradient(145deg, #0F2850 0%, #1A4480 40%, #0F3460 100%)',
       }}
     >
       {/* Theme toggle */}
@@ -92,160 +89,170 @@ export default function LoginPage() {
         <IconButton
           onClick={toggleTheme}
           size="small"
-          sx={{ color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#fff' } }}
+          sx={{ color: 'text.secondary' }}
         >
           {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
         </IconButton>
       </Box>
 
-      {/* Wordmark above card */}
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography
-          variant="h3"
-          fontWeight={700}
-          letterSpacing="-0.03em"
-          sx={{ color: '#FFFFFF', mb: 0.5 }}
+      <Box sx={{ width: '100%', maxWidth: 420 }}>
+        <Card
+          elevation={0}
+          sx={{
+            borderRadius: 4,
+            overflow: 'hidden',
+            boxShadow: mode === 'light'
+              ? '0 4px 32px rgba(0,0,0,0.10)'
+              : '0 4px 32px rgba(0,0,0,0.4)',
+          }}
         >
-          Resolve
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{ color: 'rgba(255,255,255,0.65)', letterSpacing: '0.02em' }}
-        >
-          Transaction Dispute Portal
-        </Typography>
-      </Box>
-
-      {/* Card */}
-      <Card
-        elevation={0}
-        sx={{
-          width: '100%',
-          maxWidth: 420,
-          borderRadius: 4,
-          border: 'none',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.35)',
-          bgcolor: mode === 'dark' ? '#161B22' : '#FFFFFF',
-        }}
-      >
-        <CardContent sx={{ p: 4 }}>
-          <Typography
-            variant="h6"
-            fontWeight={600}
-            sx={{ mb: 3, color: 'text.primary', letterSpacing: '-0.01em' }}
+          {/* Colourful header band */}
+          <Box
+            sx={{
+              background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #0891B2 100%)',
+              px: 4,
+              py: 4,
+              textAlign: 'center',
+            }}
           >
-            Sign in to your account
-          </Typography>
-
-          {error && (
-            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <TextField
-              {...register('email')}
-              label="Email"
-              type="email"
-              fullWidth
-              autoFocus
-              autoComplete="email"
-              value={emailValue || ''}
-              InputLabelProps={{ shrink: !!emailValue }}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              sx={{ mb: 2.5 }}
-            />
-            <TextField
-              {...register('password')}
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              fullWidth
-              autoComplete="current-password"
-              value={passwordValue || ''}
-              InputLabelProps={{ shrink: !!passwordValue }}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((s) => !s)}
-                      edge="end"
-                      size="small"
-                      tabIndex={-1}
-                    >
-                      {showPassword ? (
-                        <VisibilityOff fontSize="small" />
-                      ) : (
-                        <Visibility fontSize="small" />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 4 }}
-            />
-
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              size="large"
-              disabled={isSubmitting}
-              sx={{
-                borderRadius: 3,
-                py: 1.5,
-                fontSize: '1rem',
-                fontWeight: 600,
-                boxShadow: '0 4px 16px rgba(0, 113, 227, 0.4)',
-                '&:hover': {
-                  boxShadow: '0 6px 20px rgba(0, 113, 227, 0.5)',
-                },
-              }}
+            <Typography
+              variant="h4"
+              fontWeight={700}
+              letterSpacing="-0.03em"
+              sx={{ color: '#FFFFFF', mb: 0.5 }}
             >
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
-            </Button>
+              Resolve
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: 'rgba(255,255,255,0.8)', letterSpacing: '0.02em' }}
+            >
+              Transaction Dispute Portal
+            </Typography>
           </Box>
 
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="caption" color="text.secondary">
-              Demo accounts
+          {/* Form body */}
+          <Box sx={{ px: 4, py: 4, bgcolor: 'background.paper' }}>
+            <Typography
+              variant="h6"
+              fontWeight={600}
+              sx={{ mb: 3, letterSpacing: '-0.01em' }}
+            >
+              Sign in to continue
             </Typography>
-          </Divider>
 
-          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-            {DEMO_ACCOUNTS.map((account) => (
-              <Chip
-                key={account.email}
-                label={account.label}
-                variant="outlined"
-                size="small"
-                onClick={() => fillDemo(account.email)}
+            {error && (
+              <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+              <TextField
+                {...register('email')}
+                label="Email"
+                type="email"
+                fullWidth
+                autoFocus
+                autoComplete="email"
+                value={emailValue || ''}
+                InputLabelProps={{ shrink: !!emailValue }}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                sx={{ mb: 2.5 }}
+              />
+              <TextField
+                {...register('password')}
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                fullWidth
+                autoComplete="current-password"
+                value={passwordValue || ''}
+                InputLabelProps={{ shrink: !!passwordValue }}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword((s) => !s)}
+                        edge="end"
+                        size="small"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? (
+                          <VisibilityOff fontSize="small" />
+                        ) : (
+                          <Visibility fontSize="small" />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 4 }}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                size="large"
+                disabled={isSubmitting}
                 sx={{
-                  cursor: 'pointer',
-                  borderRadius: 2,
-                  fontSize: '0.75rem',
-                  borderColor: 'divider',
+                  borderRadius: 3,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+                  boxShadow: '0 4px 16px rgba(124, 58, 237, 0.35)',
                   '&:hover': {
-                    borderColor: 'primary.main',
-                    color: 'primary.main',
-                    bgcolor: 'transparent',
+                    background: 'linear-gradient(135deg, #1D4ED8 0%, #6D28D9 100%)',
+                    boxShadow: '0 6px 20px rgba(124, 58, 237, 0.45)',
                   },
                 }}
-              />
-            ))}
+              >
+                {isSubmitting ? 'Signing in...' : 'Sign in'}
+              </Button>
+            </Box>
+
+            <Divider sx={{ my: 3 }}>
+              <Typography variant="caption" color="text.secondary">
+                Demo accounts
+              </Typography>
+            </Divider>
+
+            <Stack direction="row" spacing={1} justifyContent="center">
+              {DEMO_ACCOUNTS.map((account) => (
+                <Chip
+                  key={account.email}
+                  label={account.label}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => fillDemo(account.email)}
+                  sx={{
+                    cursor: 'pointer',
+                    borderRadius: 2,
+                    fontSize: '0.75rem',
+                    borderColor: 'divider',
+                    '&:hover': {
+                      borderColor: '#7C3AED',
+                      color: '#7C3AED',
+                      bgcolor: '#F5F3FF',
+                    },
+                  }}
+                />
+              ))}
+            </Stack>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}
+            >
+              Click to auto-fill credentials
+            </Typography>
           </Box>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}
-          >
-            Click to auto-fill credentials
-          </Typography>
-        </CardContent>
-      </Card>
+        </Card>
+      </Box>
     </Box>
   );
 }

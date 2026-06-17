@@ -1,48 +1,45 @@
-// Design tokens — single source of truth for all colours
 export const tokens = {
-  // Primary — Apple blue
+  // Multi-colour accent system
+  blue: '#2563EB',
+  blueLight: '#EFF6FF',
+  purple: '#7C3AED',
+  purpleLight: '#F5F3FF',
+  teal: '#0891B2',
+  tealLight: '#ECFEFF',
+  indigo: '#4F46E5',
+  indigoLight: '#EEF2FF',
+
+  // Primary action colour
   primary: {
-    main: '#0071E3',
-    hover: '#0077ED',
-    light: '#E8F1FF',
+    main: '#2563EB',
+    hover: '#1D4ED8',
+    light: '#EFF6FF',
     contrastText: '#FFFFFF',
   },
 
-  // Accent 1 — teal (interactions, links, focus)
-  teal: {
-    main: '#2C7A7B',
-    light: '#E6F4F4',
-  },
-
-  // Accent 2 — indigo (charts, special tags, insights)
-  indigo: {
-    main: '#4C51BF',
-    light: '#EEF2FF',
-  },
-
-  // Status — desaturated for premium feel
+  // Status colours — rich and saturated
   status: {
-    resolved: '#2E7D5C',
-    resolvedBg: '#E8F5EE',
-    pending: '#C28B2C',
-    pendingBg: '#FDF5E6',
-    rejected: '#C24141',
-    rejectedBg: '#FDEAEA',
-    underReview: '#3B6EA5',
-    underReviewBg: '#EAF1FA',
+    resolved: '#16A34A',
+    resolvedBg: '#DCFCE7',
+    pending: '#D97706',
+    pendingBg: '#FEF3C7',
+    rejected: '#DC2626',
+    rejectedBg: '#FEE2E2',
+    underReview: '#7C3AED',
+    underReviewBg: '#F5F3FF',
   },
 
-  // Light mode surfaces — Apple-inspired
+  // Light mode — neutral base
   light: {
-    background: '#F5F5F7',
+    background: '#F8FAFC',
     paper: '#FFFFFF',
-    elevated: '#F5F5F7',
-    border: '#D2D2D7',
-    textPrimary: '#1D1D1F',
-    textSecondary: '#6E6E73',
+    elevated: '#F1F5F9',
+    border: '#E2E8F0',
+    textPrimary: '#0F172A',
+    textSecondary: '#64748B',
   },
 
-  // Dark mode surfaces
+  // Dark mode
   dark: {
     background: '#0D1117',
     paper: '#161B22',
