@@ -259,14 +259,26 @@ export default function DisputeDetailPage() {
                       ))}
                     </TextField>
                     <TextField
-                      label="Resolution note"
+                      label={
+                        newStatus === 'RESOLVED' ? 'Resolution note' :
+                        newStatus === 'REJECTED' ? 'Rejection reason' :
+                        newStatus === 'PENDING' ? 'Reason for re-opening' :
+                        newStatus === 'UNDER_REVIEW' ? 'Review note' :
+                        'Note'
+                      }
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       multiline
                       rows={3}
                       fullWidth
                       size="small"
-                      placeholder="Add a note explaining this status change..."
+                      placeholder={
+                        newStatus === 'RESOLVED' ? 'Describe how the dispute was resolved...' :
+                        newStatus === 'REJECTED' ? 'Explain why this dispute is being rejected...' :
+                        newStatus === 'PENDING' ? 'Explain why this dispute is being re-opened...' :
+                        newStatus === 'UNDER_REVIEW' ? 'Add a note about the review process...' :
+                        'Add a note...'
+                      }
                       sx={{ mb: 2 }}
                     />
                     <Button
