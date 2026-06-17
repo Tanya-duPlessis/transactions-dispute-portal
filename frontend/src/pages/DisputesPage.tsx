@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box, Card, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Typography, Skeleton, TablePagination,
@@ -24,13 +24,24 @@ const REASON_LABELS: Record<string, string> = {
 };
 
 export default function DisputesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('');
   const navigate = useNavigate();
+
+  const page = parseInt(searchParams.get('page') || '0');
+  const rowsPerPage = parseInt(searchParams.get('limit') || '20');
+  const status = searchParams.get('status') || '';
+
+  const setParam = (key: string, value: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value) next.set(key, value); else next.delete(key);
+      if (key !== 'page') next.delete('page');
+      return next;
+    });
+  };
 
   const fetchDisputes = useCallback(async () => {
     setLoading(true);
@@ -69,7 +80,7 @@ export default function DisputesPage() {
             select
             label="Status"
             value={status}
-            onChange={(e) => { setStatus(e.target.value); setPage(0); }}
+            onChange={(e) => setParam('status', e.target.value)}
             size="small"
             sx={{ minWidth: 180 }}
           >
@@ -162,8 +173,8 @@ export default function DisputesPage() {
             count={total}
             page={page}
             rowsPerPage={rowsPerPage}
-            onPageChange={(_, p) => setPage(p)}
-            onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value)); setPage(0); }}
+            onPageChange={(_, p) => setParam('page', String(p))}
+            onRowsPerPageChange={(e) => setParam('limit', e.target.value)}
             rowsPerPageOptions={[10, 20, 50]}
             sx={{ borderTop: '1px solid', borderColor: 'divider' }}
           />

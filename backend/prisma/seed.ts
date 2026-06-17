@@ -103,8 +103,8 @@ async function main() {
     return transactions;
   };
 
-  const c1Transactions = await createTransactions(customer1.id, 55);
-  const c2Transactions = await createTransactions(customer2.id, 50);
+  const c1Transactions = await createTransactions(customer1.id, 23);
+  const c2Transactions = await createTransactions(customer2.id, 23);
 
   console.log('Created transactions');
 

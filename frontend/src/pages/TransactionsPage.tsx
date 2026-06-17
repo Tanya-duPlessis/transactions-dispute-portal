@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Box, Card, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TextField, MenuItem, Button,
@@ -18,17 +19,29 @@ import type { Transaction, Category, DisputeStatus } from '../types';
 const CATEGORIES = ['FOOD', 'TRANSPORT', 'SHOPPING', 'ENTERTAINMENT', 'UTILITIES', 'OTHER'];
 
 export default function TransactionsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // All filter state lives in the URL
+  const page = parseInt(searchParams.get('page') || '0');
+  const rowsPerPage = parseInt(searchParams.get('limit') || '20');
+  const search = searchParams.get('search') || '';
+  const category = searchParams.get('category') || '';
+  const dateFrom = searchParams.get('dateFrom') || '';
+  const dateTo = searchParams.get('dateTo') || '';
+
+  const setParam = (key: string, value: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value) next.set(key, value); else next.delete(key);
+      if (key !== 'page') next.delete('page');
+      return next;
+    });
+  };
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -50,9 +63,7 @@ export default function TransactionsPage() {
 
   useEffect(() => { fetchTransactions(); }, [fetchTransactions]);
 
-  const handleClearFilters = () => {
-    setSearch(''); setCategory(''); setDateFrom(''); setDateTo(''); setPage(0);
-  };
+  const handleClearFilters = () => setSearchParams({});
 
   const hasFilters = search || category || dateFrom || dateTo;
 
@@ -75,7 +86,7 @@ export default function TransactionsPage() {
           <TextField
             placeholder="Search merchant..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+            onChange={(e) => setParam('search', e.target.value)}
             size="small"
             sx={{ minWidth: 220 }}
             InputProps={{
@@ -90,7 +101,7 @@ export default function TransactionsPage() {
             select
             label="Category"
             value={category}
-            onChange={(e) => { setCategory(e.target.value); setPage(0); }}
+            onChange={(e) => setParam('category', e.target.value)}
             size="small"
             sx={{ minWidth: 160 }}
           >
@@ -103,7 +114,7 @@ export default function TransactionsPage() {
             label="From"
             type="date"
             value={dateFrom}
-            onChange={(e) => { setDateFrom(e.target.value); setPage(0); }}
+            onChange={(e) => setParam('dateFrom', e.target.value)}
             size="small"
             InputLabelProps={{ shrink: true }}
             sx={{ minWidth: 150 }}
@@ -112,7 +123,7 @@ export default function TransactionsPage() {
             label="To"
             type="date"
             value={dateTo}
-            onChange={(e) => { setDateTo(e.target.value); setPage(0); }}
+            onChange={(e) => setParam('dateTo', e.target.value)}
             size="small"
             InputLabelProps={{ shrink: true }}
             sx={{ minWidth: 150 }}
@@ -231,8 +242,8 @@ export default function TransactionsPage() {
             count={total}
             page={page}
             rowsPerPage={rowsPerPage}
-            onPageChange={(_, p) => setPage(p)}
-            onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value)); setPage(0); }}
+            onPageChange={(_, p) => setParam('page', String(p))}
+            onRowsPerPageChange={(e) => { setParam('limit', e.target.value); }}
             rowsPerPageOptions={[10, 20, 50]}
             sx={{ borderTop: '1px solid', borderColor: 'divider' }}
           />
