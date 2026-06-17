@@ -1,219 +1,173 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
-  AppBar,
-  Box,
-  Drawer,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  Typography,
-  Avatar,
-  Tooltip,
-  Divider,
-  useMediaQuery,
-  useTheme,
+  AppBar, Box, Toolbar, Typography, Button, Avatar,
+  Menu, MenuItem, Divider, IconButton, Tooltip,
 } from '@mui/material';
-import {
-  Menu as MenuIcon,
-  ReceiptLong,
-  Gavel,
-  Logout,
-  AdminPanelSettings,
-  ChevronLeft,
-  DarkMode,
-  LightMode,
-} from '@mui/icons-material';
+import { DarkMode, LightMode, KeyboardArrowDown } from '@mui/icons-material';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/auth.service';
 import { useSnackbar } from 'notistack';
 import { useThemeMode } from '../../theme/ThemeContext';
 
-const DRAWER_WIDTH = 240;
-
 const customerNav = [
-  { label: 'Transactions', icon: <ReceiptLong />, path: '/transactions' },
-  { label: 'My Disputes', icon: <Gavel />, path: '/disputes' },
+  { label: 'Transactions', path: '/transactions' },
+  { label: 'My Disputes', path: '/disputes' },
 ];
 
 const adminNav = [
-  { label: 'All Disputes', icon: <AdminPanelSettings />, path: '/admin/disputes' },
+  { label: 'All Disputes', path: '/admin/disputes' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { mode, toggleTheme } = useThemeMode();
 
   const navItems = user?.role === 'ADMIN' ? adminNav : customerNav;
 
   const handleLogout = async () => {
-    try {
-      await authService.logout();
-    } catch {
-      // ignore logout errors
-    }
+    setAnchorEl(null);
+    try { await authService.logout(); } catch { /* ignore */ }
     logout();
     navigate('/login');
     enqueueSnackbar('Logged out successfully', { variant: 'success' });
   };
 
-  const drawerContent = (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
-        <Typography
-          variant="h6"
-          color="primary"
-          sx={{ fontFamily: '"Space Grotesk", sans-serif', fontWeight: 700, letterSpacing: '-0.02em' }}
-        >
-          Resolve
-        </Typography>
-        {!isMobile && (
-          <IconButton size="small" onClick={() => setDesktopOpen(false)}>
-            <ChevronLeft fontSize="small" />
-          </IconButton>
-        )}
-      </Toolbar>
-      <Divider />
-      <List sx={{ flex: 1, pt: 1 }}>
-        {navItems.map((item) => (
-          <ListItemButton
-            key={item.path}
-            component={Link}
-            to={item.path}
-            selected={location.pathname === item.path}
-            onClick={() => isMobile && setMobileOpen(false)}
-            sx={{
-              mx: 1,
-              borderRadius: 2,
-              mb: 0.5,
-              '&.Mui-selected': {
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                '& .MuiListItemIcon-root': { color: 'primary.contrastText' },
-                '&:hover': { bgcolor: 'primary.dark' },
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} />
-          </ListItemButton>
-        ))}
-      </List>
-      <Divider />
-      <Box sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-          <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36, fontSize: 14 }}>
-            {user?.name.charAt(0).toUpperCase()}
-          </Avatar>
-          <Box>
-            <Typography variant="body2" fontWeight={600} noWrap>
-              {user?.name}
-            </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
-              {user?.role}
-            </Typography>
-          </Box>
-        </Box>
-        <Tooltip title={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
-          <ListItemButton onClick={toggleTheme} sx={{ borderRadius: 2, py: 0.75, mb: 0.5 }}>
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
-            </ListItemIcon>
-            <ListItemText
-              primary={mode === 'light' ? 'Dark mode' : 'Light mode'}
-              primaryTypographyProps={{ variant: 'body2' }}
-            />
-          </ListItemButton>
-        </Tooltip>
-        <Tooltip title="Logout">
-          <ListItemButton onClick={handleLogout} sx={{ borderRadius: 2, py: 0.75 }}>
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              <Logout fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Logout" primaryTypographyProps={{ variant: 'body2' }} />
-          </ListItemButton>
-        </Tooltip>
-      </Box>
-    </Box>
-  );
-
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (t) => t.zIndex.drawer + 1, display: { md: 'none' } }}
-      >
-        <Toolbar>
-          <IconButton color="inherit" edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 2 }}>
-            <MenuIcon />
-          </IconButton>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar position="sticky" elevation={0}>
+        <Toolbar sx={{ gap: 1, px: { xs: 2, md: 4 } }}>
+          {/* Wordmark */}
           <Typography
+            component={Link}
+            to={navItems[0].path}
             variant="h6"
             color="primary"
-            sx={{ flex: 1, fontFamily: '"Space Grotesk", sans-serif', fontWeight: 700, letterSpacing: '-0.02em' }}
+            sx={{
+              fontFamily: '"Space Grotesk", sans-serif',
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              textDecoration: 'none',
+              mr: 3,
+              flexShrink: 0,
+            }}
           >
             Resolve
           </Typography>
-          <IconButton color="inherit" onClick={toggleTheme}>
-            {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
-          </IconButton>
+
+          {/* Nav links */}
+          <Box sx={{ display: 'flex', gap: 0.5, flex: 1 }}>
+            {navItems.map((item) => {
+              const active = location.pathname === item.path;
+              return (
+                <Button
+                  key={item.path}
+                  component={Link}
+                  to={item.path}
+                  size="small"
+                  sx={{
+                    borderRadius: 2,
+                    px: 2,
+                    py: 0.75,
+                    fontWeight: active ? 600 : 400,
+                    color: active ? 'primary.main' : 'text.secondary',
+                    bgcolor: active ? 'primary.light' : 'transparent',
+                    '&:hover': {
+                      bgcolor: 'action.hover',
+                      color: 'text.primary',
+                    },
+                  }}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
+          </Box>
+
+          {/* Right side actions */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Tooltip title={mode === 'light' ? 'Dark mode' : 'Light mode'}>
+              <IconButton size="small" onClick={toggleTheme} sx={{ color: 'text.secondary' }}>
+                {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
+              </IconButton>
+            </Tooltip>
+
+            {/* User menu */}
+            <Button
+              size="small"
+              onClick={(e) => setAnchorEl(e.currentTarget)}
+              endIcon={<KeyboardArrowDown fontSize="small" />}
+              sx={{
+                borderRadius: 2,
+                px: 1.5,
+                gap: 1,
+                color: 'text.primary',
+                textTransform: 'none',
+                '&:hover': { bgcolor: 'action.hover' },
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 28,
+                  height: 28,
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  bgcolor: 'primary.main',
+                }}
+              >
+                {user?.name?.charAt(0).toUpperCase()}
+              </Avatar>
+              <Box sx={{ textAlign: 'left', display: { xs: 'none', sm: 'block' } }}>
+                <Typography variant="body2" fontWeight={600} lineHeight={1.2}>
+                  {user?.name}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" lineHeight={1}>
+                  {user?.role}
+                </Typography>
+              </Box>
+            </Button>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={() => setAnchorEl(null)}
+              PaperProps={{
+                sx: { minWidth: 180, borderRadius: 3, mt: 0.5, boxShadow: '0 8px 32px rgba(0,0,0,0.12)' },
+              }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <Box sx={{ px: 2, py: 1.5 }}>
+                <Typography variant="body2" fontWeight={600}>{user?.name}</Typography>
+                <Typography variant="caption" color="text.secondary">{user?.email}</Typography>
+              </Box>
+              <Divider />
+              <MenuItem
+                onClick={handleLogout}
+                sx={{ mt: 0.5, borderRadius: 1.5, mx: 0.5, color: 'error.main', fontSize: '0.875rem' }}
+              >
+                Sign out
+              </MenuItem>
+            </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Mobile drawer */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        ModalProps={{ keepMounted: true }}
-        sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: DRAWER_WIDTH } }}
-      >
-        {drawerContent}
-      </Drawer>
-
-      {/* Desktop drawer */}
-      {desktopOpen ? (
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            width: DRAWER_WIDTH,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': { width: DRAWER_WIDTH, boxSizing: 'border-box' },
-          }}
-          open
-        >
-          {drawerContent}
-        </Drawer>
-      ) : (
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'flex-start', pt: 2, pl: 1 }}>
-          <IconButton onClick={() => setDesktopOpen(true)}>
-            <MenuIcon />
-          </IconButton>
-        </Box>
-      )}
-
+      {/* Page content */}
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
-          p: 3,
-          mt: { xs: 8, md: 0 },
-          minHeight: '100vh',
-          bgcolor: 'background.default',
-          transition: 'margin 0.2s',
-          overflow: 'auto',
-          minWidth: 0,
+          flex: 1,
+          px: { xs: 2, md: 4 },
+          py: 4,
+          maxWidth: 1280,
+          width: '100%',
+          mx: 'auto',
+          boxSizing: 'border-box',
         }}
       >
         {children}
