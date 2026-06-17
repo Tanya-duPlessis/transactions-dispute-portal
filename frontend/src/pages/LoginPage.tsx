@@ -117,9 +117,13 @@ export default function LoginPage() {
           >
             <Typography
               variant="h4"
-              fontWeight={700}
-              letterSpacing="-0.03em"
-              sx={{ color: '#FFFFFF', mb: 0.5 }}
+              sx={{
+                color: '#FFFFFF',
+                mb: 0.5,
+                fontFamily: '"Space Grotesk", sans-serif',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+              }}
             >
               Resolve
             </Typography>

@@ -70,7 +70,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
-        <Typography variant="h6" fontWeight={700} color="primary">
+        <Typography
+          variant="h6"
+          color="primary"
+          sx={{ fontFamily: '"Space Grotesk", sans-serif', fontWeight: 700, letterSpacing: '-0.02em' }}
+        >
           Resolve
         </Typography>
         {!isMobile && (
@@ -153,7 +157,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <IconButton color="inherit" edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" fontWeight={700} color="primary" sx={{ flex: 1 }}>
+          <Typography
+            variant="h6"
+            color="primary"
+            sx={{ flex: 1, fontFamily: '"Space Grotesk", sans-serif', fontWeight: 700, letterSpacing: '-0.02em' }}
+          >
             Resolve
           </Typography>
           <IconButton color="inherit" onClick={toggleTheme}>
