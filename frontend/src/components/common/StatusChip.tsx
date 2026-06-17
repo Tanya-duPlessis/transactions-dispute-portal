@@ -29,7 +29,7 @@ export default function StatusChip({ status, size = 'small' }: Props) {
         fontWeight: 600,
         borderRadius: 6,
         fontSize: size === 'small' ? '0.72rem' : '0.8rem',
-        border: isDark ? 'none' : `1px solid ${config.color}33`,
+        border: 'none',
         '& .MuiChip-label': { px: 1.5 },
       }}
     />

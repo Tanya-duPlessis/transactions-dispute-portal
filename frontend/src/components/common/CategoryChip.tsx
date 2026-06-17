@@ -29,7 +29,7 @@ export default function CategoryChip({ category }: Props) {
         fontWeight: 600,
         borderRadius: 6,
         fontSize: '0.72rem',
-        border: isDark ? 'none' : `1px solid ${config.color}33`,
+        border: 'none',
         '& .MuiChip-label': { px: 1.5 },
       }}
     />
