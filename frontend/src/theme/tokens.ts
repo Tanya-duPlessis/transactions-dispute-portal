@@ -41,11 +41,11 @@ export const tokens = {
 
   // Dark mode
   dark: {
-    background: '#0D1117',
-    paper: '#161B22',
-    elevated: '#1C2333',
-    border: '#30363D',
-    textPrimary: '#E6EDF3',
-    textSecondary: '#8B949E',
+    background: '#1A1D27',
+    paper: '#22263A',
+    elevated: '#2A2F45',
+    border: '#3A3F58',
+    textPrimary: '#E8EAF0',
+    textSecondary: '#9095B0',
   },
 };
