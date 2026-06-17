@@ -187,6 +187,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           variant="permanent"
           sx={{
             display: { xs: 'none', md: 'block' },
+            width: DRAWER_WIDTH,
+            flexShrink: 0,
             '& .MuiDrawer-paper': { width: DRAWER_WIDTH, boxSizing: 'border-box' },
           }}
           open
@@ -210,6 +212,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           minHeight: '100vh',
           bgcolor: 'background.default',
           transition: 'margin 0.2s',
+          overflow: 'auto',
+          minWidth: 0,
         }}
       >
         {children}

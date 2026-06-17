@@ -196,20 +196,24 @@ export default function DisputeDetailPage() {
                     {STATUS_STEPS.map((step, i) => {
                       const reached = STATUS_STEPS.indexOf(dispute.status as DisputeStatus) >= i;
                       return (
-                        <Box key={step} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: i < STATUS_STEPS.length - 1 ? 0 : 0 }}>
-                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box key={step} sx={{ display: 'flex', gap: 2 }}>
+                          {/* Icon + connector column */}
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20, flexShrink: 0 }}>
                             {reached ? (
                               <CheckCircle sx={{ color: getStatusColour(step), fontSize: 20 }} />
                             ) : (
-                              <RadioButtonUnchecked sx={{ color: 'divider', fontSize: 20 }} />
+                              <RadioButtonUnchecked sx={{ color: 'text.disabled', fontSize: 20 }} />
                             )}
                             {i < STATUS_STEPS.length - 1 && (
-                              <Box sx={{ width: 2, height: 24, bgcolor: reached ? getStatusColour(step) : 'divider', my: 0.5, borderRadius: 1 }} />
+                              <Box sx={{ width: 2, flex: 1, minHeight: 20, bgcolor: reached ? getStatusColour(step) : 'divider', my: 0.5, borderRadius: 1 }} />
                             )}
                           </Box>
-                          <Typography variant="body2" fontWeight={reached ? 600 : 400} color={reached ? 'text.primary' : 'text.secondary'}>
-                            {step.charAt(0) + step.slice(1).toLowerCase().replace('_', ' ')}
-                          </Typography>
+                          {/* Label */}
+                          <Box sx={{ pb: i < STATUS_STEPS.length - 1 ? 1.5 : 0, pt: 0.1 }}>
+                            <Typography variant="body2" fontWeight={reached ? 600 : 400} color={reached ? 'text.primary' : 'text.secondary'}>
+                              {step.charAt(0) + step.slice(1).toLowerCase().replace('_', ' ')}
+                            </Typography>
+                          </Box>
                         </Box>
                       );
                     })}
@@ -268,32 +272,46 @@ export default function DisputeDetailPage() {
                 )}
 
                 {/* Audit events */}
-                <Stack spacing={2.5}>
+                <Stack spacing={0}>
                   {(dispute.events || []).map((event, i) => (
-                    <Box key={event.id} sx={{ display: 'flex', gap: 1.5 }}>
+                    <Box key={event.id} sx={{ display: 'flex', gap: 1.5, position: 'relative' }}>
+                      {/* Vertical connector line between events */}
+                      {i < (dispute.events?.length ?? 0) - 1 && (
+                        <Box sx={{
+                          position: 'absolute',
+                          left: 15,
+                          top: 36,
+                          bottom: 0,
+                          width: 2,
+                          bgcolor: 'divider',
+                          zIndex: 0,
+                        }} />
+                      )}
                       <Avatar
                         sx={{
                           width: 32,
                           height: 32,
                           fontSize: '0.75rem',
                           fontWeight: 700,
-                          bgcolor: i === 0 ? '#2563EB22' : '#7C3AED22',
-                          color: i === 0 ? '#2563EB' : '#7C3AED',
+                          bgcolor: event.actor?.role === 'ADMIN' ? '#7C3AED22' : '#2563EB22',
+                          color: event.actor?.role === 'ADMIN' ? '#7C3AED' : '#2563EB',
                           flexShrink: 0,
+                          zIndex: 1,
+                          mt: 0.25,
                         }}
                       >
                         {event.actor?.name?.charAt(0) || '?'}
                       </Avatar>
-                      <Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                          <Typography variant="body2" fontWeight={600}>
+                      <Box sx={{ pb: 3, flex: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, flexWrap: 'wrap', mb: 0.25 }}>
+                          <Typography variant="body2" fontWeight={600} lineHeight={1.4}>
                             {event.actor?.name || 'System'}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {formatDateTime(event.createdAt)}
                           </Typography>
                         </Box>
-                        <Typography variant="caption" sx={{ color: getStatusColour(event.toStatus as DisputeStatus), fontWeight: 600 }}>
+                        <Typography variant="caption" sx={{ color: getStatusColour(event.toStatus as DisputeStatus), fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.68rem' }}>
                           {event.toStatus.replace('_', ' ')}
                         </Typography>
                         {event.note && (
