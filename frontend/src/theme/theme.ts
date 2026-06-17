@@ -15,8 +15,8 @@ export const buildTheme = (mode: PaletteMode) => {
         contrastText: tokens.primary.contrastText,
       },
       secondary: {
-        main: tokens.teal.main,
-        light: tokens.teal.light,
+        main: tokens.teal,
+        light: tokens.tealLight,
         contrastText: '#FFFFFF',
       },
       background: {
