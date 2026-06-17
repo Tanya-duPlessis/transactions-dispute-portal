@@ -131,7 +131,7 @@ export default function LoginPage() {
                 InputLabelProps={{ shrink: !!emailValue }}
                 error={!!errors.email}
                 helperText={errors.email?.message}
-                sx={{ mb: 2 }}
+                sx={{ mb: 3 }}
               />
               <TextField
                 {...register('password')}
@@ -152,7 +152,7 @@ export default function LoginPage() {
                     </InputAdornment>
                   ),
                 }}
-                sx={{ mb: 3 }}
+                sx={{ mb: 4 }}
               />
               <Button
                 type="submit"
