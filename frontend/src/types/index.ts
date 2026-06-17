@@ -21,6 +21,7 @@ export interface User {
 export interface Transaction {
   id: string;
   userId: string;
+  reference: string;
   amount: string;
   merchant: string;
   category: Category;

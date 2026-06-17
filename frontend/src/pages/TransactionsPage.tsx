@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Box, Card, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TextField, MenuItem, Button,
@@ -7,13 +7,13 @@ import {
   IconButton, Tooltip, Chip,
 } from '@mui/material';
 import { Search, FilterAlt, ClearAll, Gavel, ChevronRight } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
 import PageHeader from '../components/common/PageHeader';
 import StatusChip from '../components/common/StatusChip';
 import CategoryChip from '../components/common/CategoryChip';
 import EmptyState from '../components/common/EmptyState';
 import DisputeModal from '../components/disputes/DisputeModal';
+import TransactionDrawer from '../components/transactions/TransactionDrawer';
 import { transactionService } from '../services/transaction.service';
 import type { Transaction, Category, DisputeStatus } from '../types';
 
@@ -26,7 +26,14 @@ export default function TransactionsPage() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerTransaction, setDrawerTransaction] = useState<Transaction | null>(null);
   const navigate = useNavigate();
+
+  const openDrawer = (tx: Transaction) => {
+    setDrawerTransaction(tx);
+    setDrawerOpen(true);
+  };
 
   // All filter state lives in the URL
   const page = parseInt(searchParams.get('page') || '0');
@@ -86,7 +93,7 @@ export default function TransactionsPage() {
       <Card elevation={0} sx={{ mb: 3, p: 2.5 }}>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
           <TextField
-            placeholder="Search merchant..."
+            placeholder="Search merchant or reference..."
             value={search}
             onChange={(e) => setParam('search', e.target.value)}
             size="small"
@@ -188,7 +195,12 @@ export default function TransactionsPage() {
                 </TableRow>
               ) : (
                 transactions.map((tx) => (
-                  <TableRow key={tx.id} hover sx={{ '&:last-child td': { border: 0 } }}>
+                  <TableRow
+                    key={tx.id}
+                    hover
+                    onClick={() => openDrawer(tx)}
+                    sx={{ '&:last-child td': { border: 0 }, cursor: 'pointer' }}
+                  >
                     <TableCell>
                       <Typography variant="body2" color="text.secondary">{formatDate(tx.date)}</Typography>
                     </TableCell>
@@ -205,7 +217,7 @@ export default function TransactionsPage() {
                       {tx.dispute ? (
                         <Tooltip title="View dispute details">
                           <Box
-                            onClick={() => navigate(`/disputes/${tx.dispute!.id}`)}
+                            onClick={(e) => { e.stopPropagation(); navigate(`/disputes/${tx.dispute!.id}`); }}
                             sx={{ display: 'inline-flex', cursor: 'pointer' }}
                           >
                             <StatusChip status={tx.dispute.status as DisputeStatus} />
@@ -222,7 +234,7 @@ export default function TransactionsPage() {
                             size="small"
                             variant="text"
                             endIcon={<ChevronRight sx={{ fontSize: '16px !important' }} />}
-                            onClick={() => navigate(`/disputes/${tx.dispute!.id}`)}
+                            onClick={(e) => { e.stopPropagation(); navigate(`/disputes/${tx.dispute!.id}`); }}
                             sx={{
                               borderRadius: 2,
                               fontSize: '0.75rem',
@@ -240,7 +252,7 @@ export default function TransactionsPage() {
                             size="small"
                             variant="outlined"
                             startIcon={<Gavel sx={{ fontSize: '14px !important' }} />}
-                            onClick={() => setSelectedTransaction(tx) || setDisputeModalOpen(true)}
+                            onClick={(e) => { e.stopPropagation(); setSelectedTransaction(tx); setDisputeModalOpen(true); }}
                             sx={{
                               borderRadius: 2,
                               fontSize: '0.75rem',
@@ -274,6 +286,13 @@ export default function TransactionsPage() {
           />
         )}
       </Card>
+
+      <TransactionDrawer
+        open={drawerOpen}
+        transaction={drawerTransaction}
+        onClose={() => setDrawerOpen(false)}
+        onRaiseDispute={(tx) => { setSelectedTransaction(tx); setDisputeModalOpen(true); }}
+      />
 
       <DisputeModal
         open={disputeModalOpen}

@@ -50,20 +50,23 @@ model User {
 }
 
 model Transaction {
-  id          String    @id @default(uuid())
-  userId      String
-  amount      Decimal   @db.Decimal(10, 2)
-  merchant    String
-  category    Category
-  date        DateTime
-  description String
-  createdAt   DateTime  @default(now())
+  id           String    @id @default(uuid())
+  userId       String
+  reference    String    @unique
+  amount       Decimal   @db.Decimal(10, 2)
+  merchant     String
+  category     Category
+  date         DateTime
+  description  String
+  createdAt    DateTime  @default(now())
 
   user    User     @relation(fields: [userId], references: [id])
   dispute Dispute?
 
   // Composite index: most common query is a user's transactions sorted by date
   @@index([userId, date])
+  // Index for reference number search
+  @@index([reference])
 }
 
 model Dispute {
