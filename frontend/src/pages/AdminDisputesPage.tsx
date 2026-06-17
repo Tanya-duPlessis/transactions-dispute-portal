@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box, Card, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Typography, Skeleton, TablePagination,
-  TextField, MenuItem, Chip, InputAdornment,
+  TextField, Chip, InputAdornment, Button,
 } from '@mui/material';
 import { Search, ChevronRight, AdminPanelSettings } from '@mui/icons-material';
 import AppLayout from '../components/layout/AppLayout';
@@ -12,8 +12,6 @@ import StatusChip from '../components/common/StatusChip';
 import EmptyState from '../components/common/EmptyState';
 import { disputeService } from '../services/dispute.service';
 import type { Dispute, DisputeStatus } from '../types';
-
-const STATUSES = ['PENDING', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED'];
 
 const REASON_LABELS: Record<string, string> = {
   UNAUTHORISED: 'Unauthorised',
@@ -107,7 +105,7 @@ export default function AdminDisputesPage() {
         ))}
       </Box>
 
-      {/* Filters */}
+      {/* Search + clear */}
       <Card elevation={0} sx={{ mb: 3, p: 2.5 }}>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
           <TextField
@@ -124,21 +122,16 @@ export default function AdminDisputesPage() {
               ),
             }}
           />
-          <TextField
-            select
-            label="Status"
-            value={status}
-            onChange={(e) => { setStatus(e.target.value); setPage(0); }}
-            size="small"
-            sx={{ minWidth: 180 }}
-          >
-            <MenuItem value="">All statuses</MenuItem>
-            {STATUSES.map((s) => (
-              <MenuItem key={s} value={s}>
-                {s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}
-              </MenuItem>
-            ))}
-          </TextField>
+          {(search || status) && (
+            <Button
+              size="small"
+              variant="text"
+              onClick={() => { setSearch(''); setStatus(''); setPage(0); }}
+              sx={{ color: 'text.secondary', borderRadius: 2 }}
+            >
+              Clear filters
+            </Button>
+          )}
         </Box>
       </Card>
 
