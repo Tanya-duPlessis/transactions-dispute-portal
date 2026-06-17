@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -33,6 +33,9 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/disputes', disputeRoutes);
 
-app.use(errorHandler);
+// Wrap async route errors so they reach the error handler
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  errorHandler(err, req, res, next);
+});
 
 export default app;
