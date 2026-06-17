@@ -19,6 +19,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/auth.service';
+import { useThemeMode } from '../theme/ThemeContext';
+import { DarkMode, LightMode } from '@mui/icons-material';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -32,13 +34,18 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
+  const { mode, toggleTheme } = useThemeMode();
 
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) });
+
+  const emailValue = watch('email', '');
+  const passwordValue = watch('password', '');
 
   const onSubmit = async (data: LoginForm) => {
     setError('');
@@ -70,6 +77,13 @@ export default function LoginPage() {
       }}
     >
       <Box sx={{ width: '100%', maxWidth: 440 }}>
+        {/* Theme toggle — top right */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+          <IconButton onClick={toggleTheme} size="small">
+            {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
+          </IconButton>
+        </Box>
+
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Box
             sx={{
@@ -114,6 +128,8 @@ export default function LoginPage() {
                 fullWidth
                 autoFocus
                 autoComplete="email"
+                value={emailValue || ''}
+                InputLabelProps={{ shrink: !!emailValue }}
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 sx={{ mb: 2 }}
@@ -124,6 +140,8 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 fullWidth
                 autoComplete="current-password"
+                value={passwordValue || ''}
+                InputLabelProps={{ shrink: !!passwordValue }}
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 InputProps={{
