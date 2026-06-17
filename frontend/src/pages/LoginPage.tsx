@@ -95,7 +95,6 @@ export default function LoginPage() {
               borderRadius: 3,
               bgcolor: 'primary.main',
               mb: 2,
-              boxShadow: '0 0 32px rgba(0, 168, 89, 0.4)',
             }}
           >
             <AccountBalance sx={{ fontSize: 32, color: 'white' }} />
@@ -110,7 +109,7 @@ export default function LoginPage() {
 
         <Card>
           <CardContent sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>
               Sign in to your account
             </Typography>
 
