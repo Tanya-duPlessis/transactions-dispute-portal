@@ -104,7 +104,7 @@ export default function LoginPage() {
             Resolve
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Transaction dispute management
+            Transaction Dispute Portal
           </Typography>
         </Box>
 
