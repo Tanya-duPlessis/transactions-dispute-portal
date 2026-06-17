@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { useAuthStore } from './store/authStore';
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const TransactionsPage = lazy(() => import('./pages/TransactionsPage'));
 const DisputesPage = lazy(() => import('./pages/DisputesPage'));
 const DisputeDetailPage = lazy(() => import('./pages/DisputeDetailPage'));
@@ -34,6 +35,7 @@ export default function App() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/transactions"
             element={
