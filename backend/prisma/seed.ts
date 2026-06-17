@@ -9,25 +9,44 @@ const merchants = [
   { name: 'Woolworths Food', category: Category.FOOD },
   { name: 'Uber Eats', category: Category.FOOD },
   { name: 'KFC', category: Category.FOOD },
-  { name: 'McDonald\'s', category: Category.FOOD },
+  { name: 'Nando\'s', category: Category.FOOD },
+  { name: 'Spur', category: Category.FOOD },
   { name: 'Uber', category: Category.TRANSPORT },
   { name: 'Bolt', category: Category.TRANSPORT },
   { name: 'Gautrain', category: Category.TRANSPORT },
   { name: 'ParkPlane', category: Category.TRANSPORT },
   { name: 'Shell Garage', category: Category.TRANSPORT },
+  { name: 'BP Express', category: Category.TRANSPORT },
   { name: 'Takealot', category: Category.SHOPPING },
   { name: 'Zara', category: Category.SHOPPING },
   { name: 'H&M', category: Category.SHOPPING },
   { name: 'Sportscene', category: Category.SHOPPING },
   { name: 'Clicks', category: Category.SHOPPING },
+  { name: 'Woolworths', category: Category.SHOPPING },
+  { name: 'Mr Price', category: Category.SHOPPING },
   { name: 'Netflix', category: Category.ENTERTAINMENT },
   { name: 'Spotify', category: Category.ENTERTAINMENT },
   { name: 'Steam', category: Category.ENTERTAINMENT },
   { name: 'Ster-Kinekor', category: Category.ENTERTAINMENT },
+  { name: 'DStv', category: Category.ENTERTAINMENT },
   { name: 'Eskom', category: Category.UTILITIES },
   { name: 'Telkom', category: Category.UTILITIES },
   { name: 'Vodacom', category: Category.UTILITIES },
+  { name: 'MTN', category: Category.UTILITIES },
   { name: 'City of Johannesburg', category: Category.UTILITIES },
+  { name: 'Cape Town City', category: Category.UTILITIES },
+];
+
+const customers = [
+  { name: 'Michelle Adler',               email: 'customer1@demo.com' },
+  { name: 'Rynhardt Janse Van Rensburg',  email: 'customer2@demo.com' },
+  { name: 'Elmarie du Plessis',           email: 'customer3@demo.com' },
+  { name: 'Mariette Adam',                email: 'customer4@demo.com' },
+  { name: 'Elsebe Potgieter',             email: 'customer5@demo.com' },
+  { name: 'Luan Chen',                    email: 'customer6@demo.com' },
+  { name: 'Ziyaad Mohamed Adam',          email: 'customer7@demo.com' },
+  { name: 'Lerato Mabusela',              email: 'customer8@demo.com' },
+  { name: 'Bontle Mnisi',                 email: 'customer9@demo.com' },
 ];
 
 function randomAmount(min: number, max: number): string {
@@ -55,39 +74,24 @@ async function main() {
   const passwordHash = await bcrypt.hash('password123', 12);
 
   const admin = await prisma.user.create({
-    data: {
-      email: 'admin@demo.com',
-      name: 'Admin User',
-      passwordHash,
-      role: Role.ADMIN,
-    },
+    data: { email: 'admin@demo.com', name: 'Admin User', passwordHash, role: Role.ADMIN },
   });
 
-  const customer1 = await prisma.user.create({
-    data: {
-      email: 'customer1@demo.com',
-      name: 'Sarah Johnson',
-      passwordHash,
-      role: Role.CUSTOMER,
-    },
-  });
-
-  const customer2 = await prisma.user.create({
-    data: {
-      email: 'customer2@demo.com',
-      name: 'James Mokoena',
-      passwordHash,
-      role: Role.CUSTOMER,
-    },
-  });
+  const createdCustomers = await Promise.all(
+    customers.map((c) =>
+      prisma.user.create({
+        data: { email: c.email, name: c.name, passwordHash, role: Role.CUSTOMER },
+      }),
+    ),
+  );
 
   console.log('Created users');
 
   const createTransactions = async (userId: string, count: number) => {
-    const transactions = [];
+    const txns = [];
     for (let i = 0; i < count; i++) {
       const merchant = randomMerchant();
-      transactions.push(
+      txns.push(
         await prisma.transaction.create({
           data: {
             userId,
@@ -100,99 +104,90 @@ async function main() {
         }),
       );
     }
-    return transactions;
+    return txns;
   };
 
-  const c1Transactions = await createTransactions(customer1.id, 23);
-  const c2Transactions = await createTransactions(customer2.id, 23);
+  // Each customer gets 20 transactions
+  const allTransactions = await Promise.all(
+    createdCustomers.map((c) => createTransactions(c.id, 20)),
+  );
 
   console.log('Created transactions');
 
-  // Pre-seed disputes in various states so reviewers see the full flow on first login
-  const seedDisputes = [
+  // Pre-seed disputes across multiple customers in all states
+  const disputeSeeds = [
     {
-      transaction: c1Transactions[0],
-      userId: customer1.id,
+      transaction: allTransactions[0][0],
+      userId: createdCustomers[0].id,
       reason: DisputeReason.UNAUTHORISED,
       description: 'I did not make this transaction. My card may have been compromised.',
       status: DisputeStatus.PENDING,
       events: [],
     },
     {
-      transaction: c1Transactions[1],
-      userId: customer1.id,
+      transaction: allTransactions[0][1],
+      userId: createdCustomers[0].id,
       reason: DisputeReason.DUPLICATE,
       description: 'This transaction appears twice on my statement for the same purchase.',
       status: DisputeStatus.UNDER_REVIEW,
       events: [
-        {
-          fromStatus: DisputeStatus.PENDING,
-          toStatus: DisputeStatus.UNDER_REVIEW,
-          note: 'Dispute received and assigned to review team.',
-          actorId: admin.id,
-        },
+        { fromStatus: DisputeStatus.PENDING, toStatus: DisputeStatus.UNDER_REVIEW, note: 'Dispute received and assigned to the review team.', actorId: admin.id },
       ],
     },
     {
-      transaction: c1Transactions[2],
-      userId: customer1.id,
+      transaction: allTransactions[1][0],
+      userId: createdCustomers[1].id,
       reason: DisputeReason.INCORRECT_AMOUNT,
-      description: 'I was charged R850 but the receipt shows R350.',
+      description: 'I was charged R850 but my receipt clearly shows R350.',
       status: DisputeStatus.RESOLVED,
       events: [
-        {
-          fromStatus: DisputeStatus.PENDING,
-          toStatus: DisputeStatus.UNDER_REVIEW,
-          note: 'Reviewing transaction records with the merchant.',
-          actorId: admin.id,
-        },
-        {
-          fromStatus: DisputeStatus.UNDER_REVIEW,
-          toStatus: DisputeStatus.RESOLVED,
-          note: 'Confirmed incorrect charge. Refund of R500 processed.',
-          actorId: admin.id,
-        },
+        { fromStatus: DisputeStatus.PENDING, toStatus: DisputeStatus.UNDER_REVIEW, note: 'Reviewing transaction records with the merchant.', actorId: admin.id },
+        { fromStatus: DisputeStatus.UNDER_REVIEW, toStatus: DisputeStatus.RESOLVED, note: 'Confirmed incorrect charge. Refund of R500 processed to account.', actorId: admin.id },
       ],
     },
     {
-      transaction: c2Transactions[0],
-      userId: customer2.id,
+      transaction: allTransactions[2][0],
+      userId: createdCustomers[2].id,
       reason: DisputeReason.SERVICE_NOT_RECEIVED,
-      description: 'Order was never delivered but I was charged.',
+      description: 'Order was never delivered but I was charged the full amount.',
       status: DisputeStatus.REJECTED,
       events: [
-        {
-          fromStatus: DisputeStatus.PENDING,
-          toStatus: DisputeStatus.UNDER_REVIEW,
-          note: 'Contacted merchant for delivery confirmation.',
-          actorId: admin.id,
-        },
-        {
-          fromStatus: DisputeStatus.UNDER_REVIEW,
-          toStatus: DisputeStatus.REJECTED,
-          note: 'Merchant provided delivery proof signed by customer. Dispute rejected.',
-          actorId: admin.id,
-        },
+        { fromStatus: DisputeStatus.PENDING, toStatus: DisputeStatus.UNDER_REVIEW, note: 'Contacted merchant for delivery confirmation.', actorId: admin.id },
+        { fromStatus: DisputeStatus.UNDER_REVIEW, toStatus: DisputeStatus.REJECTED, note: 'Merchant provided signed proof of delivery. Dispute rejected.', actorId: admin.id },
       ],
     },
     {
-      transaction: c2Transactions[1],
-      userId: customer2.id,
+      transaction: allTransactions[3][0],
+      userId: createdCustomers[3].id,
       reason: DisputeReason.UNAUTHORISED,
-      description: 'I have never shopped at this store. This is fraudulent.',
+      description: 'I have never shopped at this merchant. This transaction is fraudulent.',
       status: DisputeStatus.UNDER_REVIEW,
       events: [
-        {
-          fromStatus: DisputeStatus.PENDING,
-          toStatus: DisputeStatus.UNDER_REVIEW,
-          note: 'Flagged as potential fraud. Escalated to fraud team.',
-          actorId: admin.id,
-        },
+        { fromStatus: DisputeStatus.PENDING, toStatus: DisputeStatus.UNDER_REVIEW, note: 'Flagged as potential fraud. Escalated to the fraud investigation team.', actorId: admin.id },
+      ],
+    },
+    {
+      transaction: allTransactions[4][0],
+      userId: createdCustomers[4].id,
+      reason: DisputeReason.DUPLICATE,
+      description: 'I was charged twice for the same transaction within minutes.',
+      status: DisputeStatus.PENDING,
+      events: [],
+    },
+    {
+      transaction: allTransactions[5][0],
+      userId: createdCustomers[5].id,
+      reason: DisputeReason.INCORRECT_AMOUNT,
+      description: 'The amount deducted does not match what was agreed at point of sale.',
+      status: DisputeStatus.RESOLVED,
+      events: [
+        { fromStatus: DisputeStatus.PENDING, toStatus: DisputeStatus.UNDER_REVIEW, note: 'Requested transaction records from the merchant.', actorId: admin.id },
+        { fromStatus: DisputeStatus.UNDER_REVIEW, toStatus: DisputeStatus.RESOLVED, note: 'Merchant confirmed billing error. Full refund issued.', actorId: admin.id },
       ],
     },
   ];
 
-  for (const d of seedDisputes) {
+  for (const d of disputeSeeds) {
     const dispute = await prisma.dispute.create({
       data: {
         transactionId: d.transaction.id,
@@ -202,7 +197,6 @@ async function main() {
         status: d.status,
       },
     });
-
     for (const event of d.events) {
       await prisma.disputeEvent.create({
         data: {
@@ -219,16 +213,18 @@ async function main() {
   console.log('Created disputes with audit trail');
   console.log('');
   console.log('Seed complete. Login credentials:');
-  console.log('  Customer 1: customer1@demo.com / password123');
-  console.log('  Customer 2: customer2@demo.com / password123');
-  console.log('  Admin:      admin@demo.com     / password123');
+  console.log('  customer1@demo.com  (Michelle Adler)              / password123');
+  console.log('  customer2@demo.com  (Rynhardt Janse Van Rensburg) / password123');
+  console.log('  customer3@demo.com  (Elmarie du Plessis)          / password123');
+  console.log('  customer4@demo.com  (Mariette Adam)               / password123');
+  console.log('  customer5@demo.com  (Elsebe Potgieter)            / password123');
+  console.log('  customer6@demo.com  (Luan Chen)                   / password123');
+  console.log('  customer7@demo.com  (Ziyaad Mohamed Adam)         / password123');
+  console.log('  customer8@demo.com  (Lerato Mabusela)             / password123');
+  console.log('  customer9@demo.com  (Bontle Mnisi)                / password123');
+  console.log('  admin@demo.com      (Admin)                       / password123');
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch((e) => { console.error(e); process.exit(1); })
+  .finally(async () => { await prisma.$disconnect(); });
