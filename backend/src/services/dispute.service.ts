@@ -10,8 +10,8 @@ import type { CreateDisputeInput, ListDisputesQuery, UpdateDisputeStatusInput } 
 const VALID_TRANSITIONS: Record<DisputeStatus, DisputeStatus[]> = {
   PENDING: [DisputeStatus.UNDER_REVIEW],
   UNDER_REVIEW: [DisputeStatus.RESOLVED, DisputeStatus.REJECTED],
-  RESOLVED: [],
-  REJECTED: [],
+  RESOLVED: [DisputeStatus.PENDING],
+  REJECTED: [DisputeStatus.PENDING],
 };
 
 export const disputeService = {

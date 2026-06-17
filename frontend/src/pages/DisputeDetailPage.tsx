@@ -17,8 +17,8 @@ import { tokens } from '../theme/tokens';
 const VALID_TRANSITIONS: Record<DisputeStatus, DisputeStatus[]> = {
   PENDING: ['UNDER_REVIEW'],
   UNDER_REVIEW: ['RESOLVED', 'REJECTED'],
-  RESOLVED: [],
-  REJECTED: [],
+  RESOLVED: ['PENDING'],
+  REJECTED: ['PENDING'],
 };
 
 const REASON_LABELS: Record<string, string> = {
@@ -131,6 +131,11 @@ export default function DisputeDetailPage() {
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                       {dispute.transaction ? formatDate(dispute.transaction.date) : ''}
                     </Typography>
+                    {dispute.transaction?.reference && (
+                      <Typography variant="caption" color="text.secondary" fontFamily="monospace" sx={{ mt: 0.5, display: 'block' }}>
+                        {dispute.transaction.reference}
+                      </Typography>
+                    )}
                     {dispute.transaction && (
                       <Box sx={{ mt: 1.5 }}>
                         <CategoryChip category={dispute.transaction.category as Category} />
@@ -169,6 +174,14 @@ export default function DisputeDetailPage() {
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 0.5, lineHeight: 1.7, color: 'text.secondary' }}>
                       {dispute.description}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      Transaction Reference
+                    </Typography>
+                    <Typography variant="body2" fontFamily="monospace" fontWeight={500} sx={{ mt: 0.5 }}>
+                      {dispute.transaction?.reference || '—'}
                     </Typography>
                   </Box>
                   <Box>
