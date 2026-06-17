@@ -24,10 +24,13 @@ import {
   Logout,
   AdminPanelSettings,
   ChevronLeft,
+  DarkMode,
+  LightMode,
 } from '@mui/icons-material';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/auth.service';
 import { useSnackbar } from 'notistack';
+import { useThemeMode } from '../../theme/ThemeContext';
 
 const DRAWER_WIDTH = 240;
 
@@ -49,6 +52,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { mode, toggleTheme } = useThemeMode();
 
   const navItems = user?.role === 'ADMIN' ? adminNav : customerNav;
 
@@ -116,6 +120,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Typography>
           </Box>
         </Box>
+        <Tooltip title={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
+          <ListItemButton onClick={toggleTheme} sx={{ borderRadius: 2, py: 0.75, mb: 0.5 }}>
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
+            </ListItemIcon>
+            <ListItemText
+              primary={mode === 'light' ? 'Dark mode' : 'Light mode'}
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+        </Tooltip>
         <Tooltip title="Logout">
           <ListItemButton onClick={handleLogout} sx={{ borderRadius: 2, py: 0.75 }}>
             <ListItemIcon sx={{ minWidth: 36 }}>
@@ -138,9 +153,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <IconButton color="inherit" edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" fontWeight={700} color="primary">
+          <Typography variant="h6" fontWeight={700} color="primary" sx={{ flex: 1 }}>
             DisputePortal
           </Typography>
+          <IconButton color="inherit" onClick={toggleTheme}>
+            {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
+          </IconButton>
         </Toolbar>
       </AppBar>
 
