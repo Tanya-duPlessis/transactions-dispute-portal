@@ -3,9 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box, Card, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Typography, Skeleton, TablePagination,
-  TextField, Chip, InputAdornment, Button,
+  TextField, Chip, InputAdornment, Button, useTheme,
 } from '@mui/material';
 import { Search, ChevronRight, AdminPanelSettings } from '@mui/icons-material';
+import { tokens } from '../theme/tokens';
 import AppLayout from '../components/layout/AppLayout';
 import PageHeader from '../components/common/PageHeader';
 import StatusChip from '../components/common/StatusChip';
@@ -22,14 +23,16 @@ const REASON_LABELS: Record<string, string> = {
 };
 
 const STATUS_COUNTS_CONFIG = [
-  { status: 'PENDING', color: '#D97706', bg: '#FEF3C7' },
-  { status: 'UNDER_REVIEW', color: '#7C3AED', bg: '#F5F3FF' },
-  { status: 'RESOLVED', color: '#16A34A', bg: '#DCFCE7' },
-  { status: 'REJECTED', color: '#DC2626', bg: '#FEE2E2' },
+  { status: 'PENDING',      label: 'Pending',      color: tokens.status.pending,      bg: tokens.status.pendingBg,      darkBg: '#7A4E10' },
+  { status: 'UNDER_REVIEW', label: 'Under review',  color: tokens.status.underReview,  bg: tokens.status.underReviewBg,  darkBg: '#2D3F6B' },
+  { status: 'RESOLVED',     label: 'Resolved',     color: tokens.status.resolved,     bg: tokens.status.resolvedBg,     darkBg: '#1A4D35' },
+  { status: 'REJECTED',     label: 'Rejected',     color: tokens.status.rejected,     bg: tokens.status.rejectedBg,     darkBg: '#5C1F1F' },
 ];
 
 export default function AdminDisputesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -97,23 +100,27 @@ export default function AdminDisputesPage() {
 
       {/* Summary chips */}
       <Box sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap' }}>
-        {STATUS_COUNTS_CONFIG.map(({ status: s, color, bg }) => (
-          <Chip
-            key={s}
-            label={`${countByStatus(s)} ${s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}`}
-            size="small"
-            onClick={() => setParam('status', status === s ? '' : s)}
-            sx={{
-              bgcolor: status === s ? color : bg,
-              color: status === s ? '#fff' : color,
-              fontWeight: 600,
-              borderRadius: 6,
-              cursor: 'pointer',
-              border: `1px solid ${color}33`,
-              transition: 'all 0.15s ease',
-            }}
-          />
-        ))}
+        {STATUS_COUNTS_CONFIG.map(({ status: s, label, color, bg, darkBg }) => {
+          const isActive = status === s;
+          return (
+            <Chip
+              key={s}
+              label={`${countByStatus(s)} ${label}`}
+              size="small"
+              onClick={() => setParam('status', isActive ? '' : s)}
+              sx={{
+                bgcolor: isActive ? color : (isDark ? darkBg : bg),
+                color: isActive ? '#fff' : (isDark ? '#E8EAF0' : color),
+                fontWeight: 600,
+                borderRadius: 6,
+                cursor: 'pointer',
+                border: 'none',
+                transition: 'all 0.15s ease',
+                boxShadow: isActive ? `0 2px 8px ${color}44` : 'none',
+              }}
+            />
+          );
+        })}
       </Box>
 
       {/* Search + clear */}
