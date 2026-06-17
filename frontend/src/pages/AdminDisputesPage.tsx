@@ -3,9 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box, Card, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Typography, Skeleton, TablePagination,
-  TextField, Chip, InputAdornment, Button, useTheme,
+  TextField, Chip, InputAdornment, Button, useTheme, IconButton,
 } from '@mui/material';
-import { Search, ChevronRight, AdminPanelSettings } from '@mui/icons-material';
+import { Search, ChevronRight, AdminPanelSettings, Close } from '@mui/icons-material';
 import { tokens } from '../theme/tokens';
 import AppLayout from '../components/layout/AppLayout';
 import PageHeader from '../components/common/PageHeader';
@@ -60,13 +60,14 @@ export default function AdminDisputesPage() {
         page: page + 1,
         limit: rowsPerPage,
         status: status || undefined,
+        search: search || undefined,
       });
       setDisputes(result.data);
       setTotal(result.total);
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, status]);
+  }, [page, rowsPerPage, status, search]);
 
   // Fetch all for summary counts
   useEffect(() => {
@@ -83,13 +84,6 @@ export default function AdminDisputesPage() {
   const formatAmount = (amount: string) =>
     new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount));
 
-  const filtered = search
-    ? disputes.filter(
-        (d) =>
-          d.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
-          d.transaction?.merchant?.toLowerCase().includes(search.toLowerCase()),
-      )
-    : disputes;
 
   return (
     <AppLayout>
@@ -138,16 +132,23 @@ export default function AdminDisputesPage() {
                   <Search fontSize="small" sx={{ color: 'text.secondary' }} />
                 </InputAdornment>
               ),
+              endAdornment: search ? (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => setParam('search', '')} edge="end">
+                    <Close fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
             }}
           />
-          {(search || status) && (
+          {status && (
             <Button
               size="small"
               variant="text"
-              onClick={() => setSearchParams({})}
+              onClick={() => setParam('status', '')}
               sx={{ color: 'text.secondary', borderRadius: 2 }}
             >
-              Clear filters
+              Clear filter
             </Button>
           )}
         </Box>
@@ -176,7 +177,7 @@ export default function AdminDisputesPage() {
                     ))}
                   </TableRow>
                 ))
-              ) : filtered.length === 0 ? (
+              ) : disputes.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} sx={{ border: 'none', p: 0 }}>
                     <EmptyState
@@ -187,7 +188,7 @@ export default function AdminDisputesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filtered.map((d) => (
+                disputes.map((d) => (
                   <TableRow
                     key={d.id}
                     hover

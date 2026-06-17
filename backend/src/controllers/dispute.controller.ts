@@ -19,6 +19,7 @@ export const disputeController = {
         page: query.page ? parseInt(query.page) : 1,
         limit: query.limit ? Math.min(parseInt(query.limit), 100) : 20,
         status: query.status as ListDisputesQuery['status'],
+        search: query.search,
       },
       isAdmin ? undefined : req.user!.userId,
     );

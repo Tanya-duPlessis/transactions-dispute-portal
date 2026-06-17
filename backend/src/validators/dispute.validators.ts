@@ -17,9 +17,8 @@ export const listDisputesSchema = z.object({
   query: z.object({
     page: z.string().optional().transform((v) => (v ? parseInt(v) : 1)),
     limit: z.string().optional().transform((v) => (v ? Math.min(parseInt(v), 100) : 20)),
-    status: z
-      .enum(['PENDING', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED'])
-      .optional(),
+    status: z.enum(['PENDING', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED']).optional(),
+    search: z.string().optional(),
   }),
 });
 

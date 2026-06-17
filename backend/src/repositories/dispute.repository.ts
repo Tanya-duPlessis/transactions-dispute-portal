@@ -5,12 +5,19 @@ const prisma = new PrismaClient();
 
 export const disputeRepository = {
   async findMany(query: ListDisputesQuery, userId?: string) {
-    const { page, limit, status } = query;
+    const { page, limit, status, search } = query;
     const skip = (page - 1) * limit;
 
     const where = {
       ...(userId && { userId }),
       ...(status && { status }),
+      ...(search && {
+        OR: [
+          { user: { name: { contains: search, mode: 'insensitive' as const } } },
+          { transaction: { merchant: { contains: search, mode: 'insensitive' as const } } },
+          { transaction: { reference: { contains: search, mode: 'insensitive' as const } } },
+        ],
+      }),
     };
 
     const [data, total] = await prisma.$transaction([
