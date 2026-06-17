@@ -11,7 +11,10 @@ export const transactionRepository = {
     const where = {
       userId,
       ...(search && {
-        merchant: { contains: search, mode: 'insensitive' as const },
+        OR: [
+          { merchant: { contains: search, mode: 'insensitive' as const } },
+          { reference: { contains: search, mode: 'insensitive' as const } },
+        ],
       }),
       ...(category && { category: category as Category }),
       ...(dateFrom || dateTo

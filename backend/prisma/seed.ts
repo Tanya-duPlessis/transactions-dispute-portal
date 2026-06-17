@@ -75,6 +75,12 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+let refCounter = 100000;
+function generateRef(): string {
+  refCounter += Math.floor(Math.random() * 99) + 1;
+  return `TXN-${refCounter.toString().padStart(8, '0')}`;
+}
+
 async function main() {
   console.log('Seeding database...');
 
@@ -107,6 +113,7 @@ async function main() {
         await prisma.transaction.create({
           data: {
             userId,
+            reference: generateRef(),
             amount: randomAmount(20, 4500),
             merchant: merchant.name,
             category: merchant.category,
