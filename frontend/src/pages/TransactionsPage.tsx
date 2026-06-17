@@ -6,7 +6,8 @@ import {
   Typography, Skeleton, TablePagination, InputAdornment,
   IconButton, Tooltip, Chip,
 } from '@mui/material';
-import { Search, FilterAlt, ClearAll, Gavel } from '@mui/icons-material';
+import { Search, FilterAlt, ClearAll, Gavel, ChevronRight } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
 import PageHeader from '../components/common/PageHeader';
 import StatusChip from '../components/common/StatusChip';
@@ -25,6 +26,7 @@ export default function TransactionsPage() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // All filter state lives in the URL
   const page = parseInt(searchParams.get('page') || '0');
@@ -201,14 +203,37 @@ export default function TransactionsPage() {
                     </TableCell>
                     <TableCell>
                       {tx.dispute ? (
-                        <StatusChip status={tx.dispute.status as DisputeStatus} />
+                        <Tooltip title="View dispute details">
+                          <Box
+                            onClick={() => navigate(`/disputes/${tx.dispute!.id}`)}
+                            sx={{ display: 'inline-flex', cursor: 'pointer' }}
+                          >
+                            <StatusChip status={tx.dispute.status as DisputeStatus} />
+                          </Box>
+                        </Tooltip>
                       ) : (
                         <Typography variant="caption" color="text.secondary">—</Typography>
                       )}
                     </TableCell>
                     <TableCell align="right">
                       {tx.dispute ? (
-                        <Typography variant="caption" color="text.secondary">Disputed</Typography>
+                        <Tooltip title="View dispute details">
+                          <Button
+                            size="small"
+                            variant="text"
+                            endIcon={<ChevronRight sx={{ fontSize: '16px !important' }} />}
+                            onClick={() => navigate(`/disputes/${tx.dispute!.id}`)}
+                            sx={{
+                              borderRadius: 2,
+                              fontSize: '0.75rem',
+                              py: 0.5,
+                              color: 'text.secondary',
+                              '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
+                            }}
+                          >
+                            View dispute
+                          </Button>
+                        </Tooltip>
                       ) : (
                         <Tooltip title="Raise a dispute">
                           <Button
