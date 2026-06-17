@@ -1,10 +1,10 @@
 // Design tokens — single source of truth for all colours
 export const tokens = {
-  // Primary — muted steel blue (trustworthy, financial)
+  // Primary — Apple blue
   primary: {
-    main: '#2F5D8C',
-    hover: '#244A70',
-    light: '#EAF1F8',
+    main: '#0071E3',
+    hover: '#0077ED',
+    light: '#E8F1FF',
     contrastText: '#FFFFFF',
   },
 
@@ -32,14 +32,14 @@ export const tokens = {
     underReviewBg: '#EAF1FA',
   },
 
-  // Light mode surfaces
+  // Light mode surfaces — Apple-inspired
   light: {
-    background: '#F6F8FB',
+    background: '#F5F5F7',
     paper: '#FFFFFF',
-    elevated: '#F1F5F9',
-    border: '#E5EAF0',
-    textPrimary: '#1F2937',
-    textSecondary: '#6B7280',
+    elevated: '#F5F5F7',
+    border: '#D2D2D7',
+    textPrimary: '#1D1D1F',
+    textSecondary: '#6E6E73',
   },
 
   // Dark mode surfaces

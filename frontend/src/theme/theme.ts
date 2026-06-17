@@ -104,17 +104,16 @@ export const buildTheme = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             backgroundImage: 'none',
-            border: `1px solid ${surface.border}`,
-            borderRadius: 12,
+            border: 'none',
+            borderRadius: 18,
             boxShadow: isDark
-              ? '0 1px 3px rgba(0,0,0,0.4)'
-              : '0 1px 3px rgba(0,0,0,0.06)',
-            transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+              ? '0 2px 12px rgba(0,0,0,0.4)'
+              : '0 2px 12px rgba(0,0,0,0.08)',
+            transition: 'box-shadow 0.2s ease',
             '&:hover': {
-              borderColor: tokens.primary.main,
               boxShadow: isDark
-                ? '0 4px 12px rgba(0,0,0,0.5)'
-                : '0 4px 12px rgba(47,93,140,0.1)',
+                ? '0 6px 24px rgba(0,0,0,0.5)'
+                : '0 6px 24px rgba(0,0,0,0.12)',
             },
           },
         },
@@ -124,7 +123,7 @@ export const buildTheme = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             backgroundImage: 'none',
-            border: `1px solid ${surface.border}`,
+            border: 'none',
           },
         },
       },

@@ -13,17 +13,16 @@ import {
   Divider,
   Chip,
 } from '@mui/material';
-import { Visibility, VisibilityOff, AccountBalance } from '@mui/icons-material';
+import { Visibility, VisibilityOff, DarkMode, LightMode } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/auth.service';
 import { useThemeMode } from '../theme/ThemeContext';
-import { DarkMode, LightMode } from '@mui/icons-material';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -52,11 +51,13 @@ export default function LoginPage() {
     try {
       const result = await authService.login(data.email, data.password);
       setAuth(result.user, result.accessToken);
-      navigate(result.user.role === 'ADMIN' ? '/admin/disputes' : '/transactions', { replace: true });
+      navigate(result.user.role === 'ADMIN' ? '/admin/disputes' : '/transactions', {
+        replace: true,
+      });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: { message?: string } } } })
         ?.response?.data?.error?.message;
-      setError(msg || 'Login failed. Please try again.');
+      setError(msg || 'Your email or password is incorrect.');
     }
   };
 
@@ -70,51 +71,43 @@ export default function LoginPage() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         bgcolor: 'background.default',
-        p: 2,
+        px: 2,
       }}
     >
-      <Box sx={{ width: '100%', maxWidth: 440 }}>
-        {/* Theme toggle — top right */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-          <IconButton onClick={toggleTheme} size="small">
-            {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
-          </IconButton>
-        </Box>
+      {/* Theme toggle */}
+      <Box sx={{ position: 'fixed', top: 20, right: 24 }}>
+        <IconButton onClick={toggleTheme} size="small" sx={{ color: 'text.secondary' }}>
+          {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
+        </IconButton>
+      </Box>
 
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 64,
-              height: 64,
-              borderRadius: 3,
-              bgcolor: 'primary.main',
-              mb: 2,
-            }}
+      <Box sx={{ width: '100%', maxWidth: 400 }}>
+        {/* Wordmark */}
+        <Box sx={{ textAlign: 'center', mb: 5 }}>
+          <Typography
+            variant="h3"
+            fontWeight={700}
+            letterSpacing="-0.03em"
+            sx={{ color: 'text.primary', mb: 0.5 }}
           >
-            <AccountBalance sx={{ fontSize: 32, color: 'white' }} />
-          </Box>
-          <Typography variant="h4" fontWeight={700} gutterBottom>
             Resolve
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" letterSpacing="0.01em">
             Transaction Dispute Portal
           </Typography>
         </Box>
 
-        <Card>
+        <Card elevation={0}>
           <CardContent sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>
-              Sign in to your account
-            </Typography>
-
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert
+                severity="error"
+                sx={{ mb: 3, borderRadius: 2, fontSize: '0.875rem' }}
+              >
                 {error}
               </Alert>
             )}
@@ -122,7 +115,7 @@ export default function LoginPage() {
             <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
               <TextField
                 {...register('email')}
-                label="Email address"
+                label="Email"
                 type="email"
                 fullWidth
                 autoFocus
@@ -131,7 +124,7 @@ export default function LoginPage() {
                 InputLabelProps={{ shrink: !!emailValue }}
                 error={!!errors.email}
                 helperText={errors.email?.message}
-                sx={{ mb: 3 }}
+                sx={{ mb: 2.5 }}
               />
               <TextField
                 {...register('password')}
@@ -146,21 +139,39 @@ export default function LoginPage() {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword((s) => !s)} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      <IconButton
+                        onClick={() => setShowPassword((s) => !s)}
+                        edge="end"
+                        size="small"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? (
+                          <VisibilityOff fontSize="small" />
+                        ) : (
+                          <Visibility fontSize="small" />
+                        )}
                       </IconButton>
                     </InputAdornment>
                   ),
                 }}
                 sx={{ mb: 4 }}
               />
+
               <Button
                 type="submit"
                 variant="contained"
                 fullWidth
                 size="large"
                 disabled={isSubmitting}
-                sx={{ mb: 1 }}
+                sx={{
+                  borderRadius: 3,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  boxShadow: 'none',
+                  '&:hover': { boxShadow: 'none' },
+                }}
               >
                 {isSubmitting ? 'Signing in...' : 'Sign in'}
               </Button>
@@ -172,35 +183,38 @@ export default function LoginPage() {
               </Typography>
             </Divider>
 
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Chip
-                label="Customer 1"
-                variant="outlined"
-                size="small"
-                onClick={() => fillDemo('customer1@demo.com')}
-                sx={{ cursor: 'pointer' }}
-              />
-              <Chip
-                label="Customer 2"
-                variant="outlined"
-                size="small"
-                onClick={() => fillDemo('customer2@demo.com')}
-                sx={{ cursor: 'pointer' }}
-              />
-              <Chip
-                label="Admin"
-                variant="outlined"
-                size="small"
-                onClick={() => fillDemo('admin@demo.com')}
-                sx={{ cursor: 'pointer' }}
-              />
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+              {[
+                { label: 'Customer 1', email: 'customer1@demo.com' },
+                { label: 'Customer 2', email: 'customer2@demo.com' },
+                { label: 'Admin', email: 'admin@demo.com' },
+              ].map((account) => (
+                <Chip
+                  key={account.email}
+                  label={account.label}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => fillDemo(account.email)}
+                  sx={{
+                    cursor: 'pointer',
+                    borderRadius: 2,
+                    fontSize: '0.75rem',
+                    borderColor: 'divider',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      bgcolor: 'transparent',
+                    },
+                  }}
+                />
+              ))}
             </Box>
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{ display: 'block', textAlign: 'center', mt: 1 }}
+              sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}
             >
-              Click a demo account to auto-fill credentials
+              Click to auto-fill credentials
             </Typography>
           </CardContent>
         </Card>
