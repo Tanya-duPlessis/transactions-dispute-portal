@@ -107,9 +107,10 @@ async function main() {
     return txns;
   };
 
-  // Each customer gets 20 transactions
+  // Distribute 23 transactions across all 9 customers (2-3 each)
+  const txnCounts = [3, 3, 3, 3, 3, 2, 2, 2, 2];
   const allTransactions = await Promise.all(
-    createdCustomers.map((c) => createTransactions(c.id, 20)),
+    createdCustomers.map((c, i) => createTransactions(c.id, txnCounts[i])),
   );
 
   console.log('Created transactions');
