@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box, Card, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Typography, Skeleton, TablePagination,
@@ -29,15 +29,26 @@ const STATUS_COUNTS_CONFIG = [
 ];
 
 export default function AdminDisputesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('');
-  const [search, setSearch] = useState('');
   const [allDisputes, setAllDisputes] = useState<Dispute[]>([]);
   const navigate = useNavigate();
+
+  const page = parseInt(searchParams.get('page') || '0');
+  const rowsPerPage = parseInt(searchParams.get('limit') || '20');
+  const status = searchParams.get('status') || '';
+  const search = searchParams.get('search') || '';
+
+  const setParam = (key: string, value: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value) next.set(key, value); else next.delete(key);
+      if (key !== 'page') next.delete('page');
+      return next;
+    });
+  };
 
   const fetchDisputes = useCallback(async () => {
     setLoading(true);
@@ -91,7 +102,7 @@ export default function AdminDisputesPage() {
             key={s}
             label={`${countByStatus(s)} ${s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}`}
             size="small"
-            onClick={() => setStatus(status === s ? '' : s)}
+            onClick={() => setParam('status', status === s ? '' : s)}
             sx={{
               bgcolor: status === s ? color : bg,
               color: status === s ? '#fff' : color,
@@ -111,7 +122,7 @@ export default function AdminDisputesPage() {
           <TextField
             placeholder="Search by customer or merchant..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => setParam('search', e.target.value)}
             size="small"
             sx={{ minWidth: 280 }}
             InputProps={{
@@ -126,7 +137,7 @@ export default function AdminDisputesPage() {
             <Button
               size="small"
               variant="text"
-              onClick={() => { setSearch(''); setStatus(''); setPage(0); }}
+              onClick={() => setSearchParams({})}
               sx={{ color: 'text.secondary', borderRadius: 2 }}
             >
               Clear filters
@@ -173,7 +184,7 @@ export default function AdminDisputesPage() {
                   <TableRow
                     key={d.id}
                     hover
-                    onClick={() => navigate(`/disputes/${d.id}`)}
+                    onClick={() => navigate(`/disputes/${d.id}`, { state: { from: 'admin' } })}
                     sx={{ cursor: 'pointer', '&:last-child td': { border: 0 } }}
                   >
                     <TableCell>
@@ -212,8 +223,8 @@ export default function AdminDisputesPage() {
             count={total}
             page={page}
             rowsPerPage={rowsPerPage}
-            onPageChange={(_, p) => setPage(p)}
-            onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value)); setPage(0); }}
+            onPageChange={(_, p) => setParam('page', String(p))}
+            onRowsPerPageChange={(e) => setParam('limit', e.target.value)}
             rowsPerPageOptions={[10, 20, 50]}
             sx={{ borderTop: '1px solid', borderColor: 'divider' }}
           />

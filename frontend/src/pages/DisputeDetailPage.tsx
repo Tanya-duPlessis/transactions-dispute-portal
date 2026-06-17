@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   Box, Card, CardContent, Typography, Skeleton, Button,
   Divider, Stack, Avatar, TextField, MenuItem,
@@ -34,6 +34,8 @@ const STATUS_STEPS: DisputeStatus[] = ['PENDING', 'UNDER_REVIEW', 'RESOLVED'];
 export default function DisputeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromAdmin = location.state?.from === 'admin';
   const { enqueueSnackbar } = useSnackbar();
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.role === 'ADMIN';
@@ -101,7 +103,7 @@ export default function DisputeDetailPage() {
         variant="text"
         sx={{ mb: 3, color: 'text.secondary', borderRadius: 2, pl: 0 }}
       >
-        Back to disputes
+        {fromAdmin ? 'Back to all disputes' : 'Back to my disputes'}
       </Button>
 
       {loading ? (
