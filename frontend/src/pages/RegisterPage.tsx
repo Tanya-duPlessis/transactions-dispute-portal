@@ -10,9 +10,8 @@ import {
   InputAdornment,
   IconButton,
   Stack,
-  Chip,
 } from '@mui/material';
-import { Visibility, VisibilityOff, DarkMode, LightMode, ArrowBack } from '@mui/icons-material';
+import { Visibility, VisibilityOff, DarkMode, LightMode } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -281,25 +280,23 @@ export default function RegisterPage() {
               </Button>
             </Box>
 
-            <Stack direction="row" justifyContent="center" alignItems="center" spacing={1} sx={{ mt: 3 }}>
+            <Stack direction="row" justifyContent="center" alignItems="center" spacing={0.5} sx={{ mt: 3 }}>
               <Typography variant="body2" color="text.secondary">
                 Already have an account?
               </Typography>
-              <Chip
-                icon={<ArrowBack sx={{ fontSize: '14px !important' }} />}
-                label="Sign in"
-                size="small"
+              <Typography
+                variant="body2"
                 component={Link}
                 to="/login"
-                clickable
-                variant="outlined"
                 sx={{
-                  borderRadius: 2,
-                  fontSize: '0.75rem',
-                  borderColor: 'divider',
-                  '&:hover': { borderColor: '#2563EB', color: '#2563EB', bgcolor: 'transparent' },
+                  color: '#2563EB',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline' },
                 }}
-              />
+              >
+                Sign in
+              </Typography>
             </Stack>
           </Box>
         </Card>

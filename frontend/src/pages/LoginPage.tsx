@@ -251,24 +251,23 @@ export default function LoginPage() {
               Click to auto-fill credentials
             </Typography>
 
-            <Stack direction="row" justifyContent="center" alignItems="center" spacing={1} sx={{ mt: 3 }}>
+            <Stack direction="row" justifyContent="center" alignItems="center" spacing={0.5} sx={{ mt: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                New to Resolve?
+                Don't have an account?
               </Typography>
-              <Chip
-                label="Create account"
-                size="small"
+              <Typography
+                variant="body2"
                 component={Link}
                 to="/register"
-                clickable
-                variant="outlined"
                 sx={{
-                  borderRadius: 2,
-                  fontSize: '0.75rem',
-                  borderColor: 'divider',
-                  '&:hover': { borderColor: '#2563EB', color: '#2563EB', bgcolor: 'transparent' },
+                  color: '#2563EB',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline' },
                 }}
-              />
+              >
+                Create account
+              </Typography>
             </Stack>
           </Box>
         </Card>
