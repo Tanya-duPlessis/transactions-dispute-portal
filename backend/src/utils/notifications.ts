@@ -29,10 +29,10 @@ export const sendDisputeConfirmationEmail = async (to: string, name: string, dis
   try {
     const t = await getTransporter();
     const info = await t.sendMail({
-      from: '"Dispute Portal" <noreply@disputes.demo>',
+      from: '"Resolve" <noreply@disputes.demo>',
       to,
       subject: 'Dispute Submitted Successfully',
-      text: `Hi ${name},\n\nYour dispute (ID: ${disputeId}) has been submitted and is under review.\n\nWe will notify you of any updates.\n\nRegards,\nDispute Portal Team`,
+      text: `Hi ${name},\n\nYour dispute (ID: ${disputeId}) has been submitted and is under review.\n\nWe will notify you of any updates.\n\nRegards,\nThe Resolve Team`,
     });
     logger.info('Dispute confirmation email sent', {
       to,
@@ -53,10 +53,10 @@ export const sendStatusUpdateEmail = async (
   try {
     const t = await getTransporter();
     const info = await t.sendMail({
-      from: '"Dispute Portal" <noreply@disputes.demo>',
+      from: '"Resolve" <noreply@disputes.demo>',
       to,
       subject: `Dispute Update: ${newStatus}`,
-      text: `Hi ${name},\n\nYour dispute (ID: ${disputeId}) status has been updated to: ${newStatus}.\n\nLogin to the portal to view the full details.\n\nRegards,\nDispute Portal Team`,
+      text: `Hi ${name},\n\nYour dispute (ID: ${disputeId}) status has been updated to: ${newStatus}.\n\nLogin to the portal to view the full details.\n\nRegards,\nThe Resolve Team`,
     });
     logger.info('Status update email sent', {
       to,

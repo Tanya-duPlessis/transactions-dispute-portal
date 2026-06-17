@@ -71,7 +71,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
         <Typography variant="h6" fontWeight={700} color="primary">
-          DisputePortal
+          Resolve
         </Typography>
         {!isMobile && (
           <IconButton size="small" onClick={() => setDesktopOpen(false)}>
@@ -154,7 +154,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" fontWeight={700} color="primary" sx={{ flex: 1 }}>
-            DisputePortal
+            Resolve
           </Typography>
           <IconButton color="inherit" onClick={toggleTheme}>
             {mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}

@@ -101,10 +101,10 @@ export default function LoginPage() {
             <AccountBalance sx={{ fontSize: 32, color: 'white' }} />
           </Box>
           <Typography variant="h4" fontWeight={700} gutterBottom>
-            DisputePortal
+            Resolve
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Secure transaction dispute management
+            Transaction dispute management
           </Typography>
         </Box>
 
@@ -191,7 +191,6 @@ export default function LoginPage() {
               <Chip
                 label="Admin"
                 variant="outlined"
-                color="primary"
                 size="small"
                 onClick={() => fillDemo('admin@demo.com')}
                 sx={{ cursor: 'pointer' }}

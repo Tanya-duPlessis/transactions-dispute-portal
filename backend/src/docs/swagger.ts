@@ -6,10 +6,10 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Transactions Dispute Portal API',
+      title: 'Resolve API',
       version: '1.0.0',
       description:
-        'RESTful API for the Transactions Dispute Portal — allows customers to view transactions and raise disputes, and admins to manage dispute resolution.',
+        'RESTful API for Resolve — allows customers to view transactions and raise disputes, and admins to manage dispute resolution.',
     },
     servers: [{ url: '/api/v1', description: 'API v1' }],
     components: {
