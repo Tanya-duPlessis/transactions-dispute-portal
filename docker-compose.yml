@@ -3,7 +3,7 @@ version: '3.9'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: disputes_db
+    container_name: resolve_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -23,15 +23,15 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: disputes_backend
+    container_name: resolve_backend
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/disputes_db
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-in-production-too}
       JWT_ACCESS_EXPIRY: 15m
       JWT_REFRESH_EXPIRY: 7d
       PORT: 4000
@@ -44,7 +44,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: disputes_frontend
+    container_name: resolve_frontend
     restart: unless-stopped
     depends_on:
       - backend

@@ -1,12 +1,12 @@
 version: '3.9'
 
-# Development only — spins up PostgreSQL so you can run backend and frontend natively with hot-reload
+# Development only — spins up PostgreSQL so you can run backend and frontend locally with hot-reload
 # Usage: docker-compose -f docker-compose.dev.yml up -d
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: disputes_db_dev
+    container_name: resolve_db_dev
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
