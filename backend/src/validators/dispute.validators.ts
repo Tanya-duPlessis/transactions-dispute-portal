@@ -24,7 +24,7 @@ export const listDisputesSchema = z.object({
 
 export const updateDisputeStatusSchema = z.object({
   body: z.object({
-    status: z.enum(['UNDER_REVIEW', 'RESOLVED', 'REJECTED']),
+    status: z.enum(['PENDING', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED']),
     note: z.string().min(5, 'Note must be at least 5 characters').max(500),
   }),
 });
