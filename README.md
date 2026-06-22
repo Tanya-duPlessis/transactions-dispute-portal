@@ -163,30 +163,7 @@ All 9 customer accounts use `password123`. Customer emails follow the pattern `c
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Client Browser                          │
-│                React 18 + TypeScript + MUI v5                   │
-└────────────────────────────┬────────────────────────────────────┘
-                             │ HTTPS / REST
-                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      Express API (Node.js)                      │
-│                                                                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │  Controllers │→ │   Services   │→ │    Repositories      │  │
-│  │  (HTTP only) │  │ (Business    │  │  (DB access only)    │  │
-│  └──────────────┘  │  logic)      │  └──────────┬───────────┘  │
-│                    └──────────────┘             │ Prisma ORM   │
-│  Middleware stack:                              ▼              │
-│  Helmet → CORS → RateLimit → Auth → Validate   PostgreSQL     │
-└─────────────────────────────────────────────────────────────────┘
-                             │
-          ┌──────────────────┼──────────────────┐
-          ▼                  ▼                  ▼
-    Docker Compose     GitHub Actions      Railway (live)
-    (local dev)        (CI/CD)            (production)
-```
+![System Architecture](diagrams/system-architecture.png)
 
 ---
 
