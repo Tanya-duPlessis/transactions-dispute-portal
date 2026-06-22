@@ -4,6 +4,9 @@ set -e
 echo "Running database migrations..."
 npx prisma migrate deploy
 
+echo "Generating Prisma client..."
+npx prisma generate
+
 echo "Checking if seed is needed..."
 USER_COUNT=$(node -e "
 const { PrismaClient } = require('@prisma/client');
