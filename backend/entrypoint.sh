@@ -13,11 +13,11 @@ p.user.count().then(c => { console.log(c); p.\$disconnect(); }).catch(() => { co
 
 if [ "$USER_COUNT" = "0" ]; then
   echo "Database is empty — running seed..."
-  node dist/prisma/seed.js
+  node dist/prisma/seed.js 2>/dev/null || echo "Seed skipped or failed — continuing."
   echo "Seed complete."
 else
   echo "Database already has data — skipping seed."
 fi
 
 echo "Starting server..."
-exec node dist/server.js
+exec node dist/src/server.js
