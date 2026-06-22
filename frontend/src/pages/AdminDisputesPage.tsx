@@ -36,7 +36,6 @@ export default function AdminDisputesPage() {
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [allDisputes, setAllDisputes] = useState<Dispute[]>([]);
   const navigate = useNavigate();
 
   const page = parseInt(searchParams.get('page') || '0');
@@ -69,14 +68,7 @@ export default function AdminDisputesPage() {
     }
   }, [page, rowsPerPage, status, search]);
 
-  // Fetch all for summary counts
-  useEffect(() => {
-    disputeService.list({ limit: 100 }).then((r) => setAllDisputes(r.data));
-  }, []);
-
   useEffect(() => { fetchDisputes(); }, [fetchDisputes]);
-
-  const countByStatus = (s: string) => allDisputes.filter((d) => d.status === s).length;
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });

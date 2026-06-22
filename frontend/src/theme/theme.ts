@@ -1,4 +1,5 @@
-import { createTheme, type PaletteMode } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
+import type { PaletteMode } from '@mui/material';
 import { tokens } from './tokens';
 
 export const buildTheme = (mode: PaletteMode) => {
@@ -179,36 +180,6 @@ export const buildTheme = (mode: PaletteMode) => {
                 borderColor: tokens.primary.main,
                 borderWidth: 2,
               },
-            },
-          },
-        },
-      },
-
-      MuiDataGrid: {
-        styleOverrides: {
-          root: {
-            border: `1px solid ${surface.border}`,
-            borderRadius: 12,
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: isDark ? tokens.dark.elevated : tokens.light.elevated,
-              borderBottom: `2px solid ${surface.border}`,
-            },
-            '& .MuiDataGrid-columnHeaderTitle': {
-              fontWeight: 600,
-              fontSize: '0.7rem',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: surface.textSecondary,
-            },
-            '& .MuiDataGrid-row:hover': {
-              backgroundColor: isDark ? tokens.dark.elevated : tokens.light.elevated,
-              cursor: 'pointer',
-            },
-            '& .MuiDataGrid-cell': {
-              borderBottom: `1px solid ${surface.border}`,
-            },
-            '& .MuiDataGrid-footerContainer': {
-              borderTop: `1px solid ${surface.border}`,
             },
           },
         },

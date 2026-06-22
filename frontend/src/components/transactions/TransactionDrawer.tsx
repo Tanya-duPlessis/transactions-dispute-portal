@@ -10,7 +10,6 @@ import CategoryChip from '../common/CategoryChip';
 import { disputeService } from '../../services/dispute.service';
 import type { Transaction, Dispute, DisputeStatus, Category } from '../../types';
 import { tokens } from '../../theme/tokens';
-import { useTheme } from '@mui/material';
 
 interface Props {
   transaction: Transaction | null;
@@ -41,7 +40,6 @@ export default function TransactionDrawer({ transaction, open, onClose, onRaiseD
   const [loadingDispute, setLoadingDispute] = useState(false);
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
-  const theme = useTheme();
 
   useEffect(() => {
     if (!transaction?.dispute?.id) { setDispute(null); return; }
