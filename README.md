@@ -305,41 +305,42 @@ sequenceDiagram
 
 ## Design Decisions and Trade-offs
 
-**Repository pattern over direct Prisma calls in services**
-All database access is isolated in repository classes. This makes services testable with mocked repositories (no test database needed for unit tests) and means the database layer can be swapped without touching business logic. Trade-off: more files and indirection for simple queries.
+**Repository pattern**
+I separated all DB access into repository classes so the service layer has no idea how data is fetched. It made unit testing much cleaner — I can mock the repository and test business logic without spinning up a database. It also means if we ever moved away from Prisma, the services wouldn't need to change. Yes, it adds more files, but the separation is worth it.
 
-**JWT in memory + refresh token in httpOnly cookie**
-The access token is stored in Zustand (memory) and the refresh token in an httpOnly cookie. This prevents XSS attacks from reading the refresh token while still allowing seamless token renewal. Trade-off: the access token is lost on page refresh, which the Axios interceptor handles by silently refreshing.
+**JWT access token in memory, refresh token in httpOnly cookie**
+Storing the access token in localStorage is a common XSS risk. I keep it in Zustand (memory only) so it dies on page refresh, and the refresh token lives in an httpOnly cookie that JavaScript can't touch. The Axios interceptor quietly refreshes the access token when it expires, so the user never notices. It's a bit more setup but the security trade-off is non-negotiable for a financial app.
 
-**Server-side pagination over client-side**
-All pagination happens on the backend with SQL LIMIT/OFFSET. This means only the current page of data is ever sent to the client. For a banking portal with potentially thousands of transactions, client-side pagination would load all records at once — unacceptable. Trade-off: every page change is a network request.
+**Server-side pagination**
+Pagination happens on the backend — the API only ever returns the current page. I could have loaded everything client-side and filtered in the browser, but that falls apart the moment you have real volume. For transactions especially, it had to be server-side from the start.
 
-**ACID transactions for dispute creation and status updates**
-Creating a dispute atomically inserts both the `Dispute` row and the initial `DisputeEvent` row. If either fails, both are rolled back. This ensures the audit trail is always consistent with the dispute state — critical for a financial system. Trade-off: slightly slower writes.
+**ACID transactions on dispute creation and status changes**
+Every dispute action does two writes — update the dispute and insert an audit event. I wrapped both in `prisma.$transaction()` so they either both succeed or both fail. Without that, a crash between the two writes would leave the audit trail out of sync with the actual status. Not acceptable in a financial context.
 
 **Prisma over raw SQL**
-Prisma provides type safety, prevents SQL injection by default, and makes migrations manageable. Trade-off: for complex reporting queries with many joins and aggregations, raw SQL would perform better. In production, I would use raw SQL for analytics queries while keeping Prisma for CRUD operations.
+Prisma gives me type-safe queries and handles migrations cleanly, which made development much faster. The one place I'd reach for raw SQL in production is complex reporting — aggregations across large datasets where the query planner needs more control. For everything in this project, Prisma was the right call.
 
-**Railway for deployment over AWS**
-For this submission, Railway was chosen to get a live URL quickly without the complexity of AWS IAM, VPC and ECS setup. Kubernetes manifests are included in `k8s/` to demonstrate that production deployment would use containerised workloads on a cluster. In a Capitec context, this would be deployed to AWS EKS with RDS PostgreSQL.
+**Railway over AWS for the live demo**
+I chose Railway because it got me a live URL in minutes and let me focus on the code rather than cloud infrastructure setup. The Kubernetes manifests in `k8s/` show how this would be deployed in a production environment — in a Capitec context that would be AWS EKS with RDS PostgreSQL.
 
 ---
 
 ## Security Approach
 
-| Concern | Implementation |
+Security wasn't an afterthought — it's built into every layer.
+
+| Concern | What I did |
 |---|---|
-| Authentication | JWT with 15-minute access tokens and 7-day httpOnly refresh tokens |
-| Password storage | bcrypt with 12 salt rounds |
-| Input validation | Zod schemas on every request body and query string |
-| SQL injection | Prisma parameterised queries — no raw string interpolation |
-| XSS | httpOnly cookies for refresh tokens; CSP via Helmet |
-| HTTP headers | Helmet middleware sets security headers on every response |
-| Rate limiting | express-rate-limit on auth routes (20 requests per 15 minutes) |
-| CORS | Restricted to the frontend origin only |
-| Route parameters | UUID format validated before any database query |
-| Sensitive data | Password hashes never returned in API responses |
-| Reverse proxy | Express trust proxy enabled for accurate IP detection on Railway |
+| Passwords | bcrypt with 12 salt rounds — slow by design |
+| Tokens | Short-lived access tokens (15min) + httpOnly refresh cookie (7 days) |
+| Input | Zod validates every request body and query param before it touches the DB |
+| SQL injection | Prisma uses parameterised queries throughout — no string interpolation |
+| HTTP headers | Helmet sets CSP, HSTS and other security headers on every response |
+| Rate limiting | Auth routes are limited to 20 requests per 15 minutes |
+| CORS | Only the frontend origin is allowed — no wildcard |
+| Route params | UUIDs are validated before any DB query hits — no malformed IDs reach Prisma |
+| Responses | Password hashes are never included in any API response |
+| Reverse proxy | Trust proxy is enabled so rate limiting works correctly behind Railway's load balancer |
 
 ---
 
@@ -395,11 +396,14 @@ Secrets are managed via `kubectl create secret` and never committed to the repos
 
 ---
 
-## Known Limitations and Future Improvements
+## Known Limitations and What I'd Add Next
 
-- **Email notifications are simulated** — Nodemailer sends to Ethereal (a fake SMTP server). In production this would integrate with the bank's email infrastructure or a service like AWS SES.
-- **No document upload** — A real dispute portal would allow customers to attach evidence (receipts, screenshots). This would require file storage (S3) and virus scanning.
-- **Single admin role** — In production there would be multiple admin roles (reviewer, approver, fraud analyst) with different permissions and escalation paths.
-- **No audit log for admin actions** — Admin logins and actions are not separately audited. In a banking context this would be required for compliance.
-- **Frontend tests** — Component-level tests with React Testing Library are scaffolded but not fully implemented. The backend has full unit and integration test coverage.
-- **Kubernetes not tested end-to-end** — The manifests follow production patterns but have not been applied to a live cluster for this submission.
+**Email notifications are simulated.** Right now Nodemailer sends to Ethereal — a fake inbox that captures emails without delivering them. In production this would connect to the bank's existing email infrastructure or AWS SES. The notification service is already abstracted, so swapping it out would be a one-file change.
+
+**No document uploads.** A real dispute process lets customers attach evidence — receipts, screenshots, bank statements. I'd add this with S3 for storage and a virus scan step before accepting any file.
+
+**One admin role.** The current system has a single ADMIN role that can do everything. In practice you'd want separate roles — an agent who can move disputes to review, a senior who can resolve or reject, and a fraud team with escalation access. The role system is already in place, it just needs more granular permissions.
+
+**Frontend component tests.** I wrote full backend unit and integration test coverage but didn't complete the frontend component tests. The test setup with Vitest and React Testing Library is in place — login, transaction list, and dispute form tests are next on the list.
+
+**Kubernetes manifests aren't battle-tested.** The `k8s/` files follow production patterns and would work on a real cluster, but I haven't applied them to a live environment for this submission. That was a deliberate time trade-off — I prioritised the working live demo over a Kubernetes setup that couldn't be verified end-to-end.
