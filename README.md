@@ -37,24 +37,27 @@ Migrations run and the database seeds automatically on first startup.
 
 Requires Node.js 22+ and PostgreSQL installed locally.
 
+**Step 1 — Start PostgreSQL (skip if already running)**
 ```bash
-git clone https://github.com/Tanya-duPlessis/transactions-dispute-portal.git
-cd transactions-dispute-portal
-
-# Start a local PostgreSQL database (e.g. via Homebrew)
+brew install postgresql@16
 brew services start postgresql@16
 createdb disputes_db
+```
 
-# Set up backend
-cd backend
-cp .env.example .env        # edit DATABASE_URL to match your local postgres
+**Step 2 — Backend**
+```bash
+git clone https://github.com/Tanya-duPlessis/transactions-dispute-portal.git
+cd transactions-dispute-portal/backend
+cp .env.example .env
 npm install
 npx prisma migrate deploy
 npm run db:seed
 npm run dev
+```
 
-# In a new terminal — set up frontend
-cd ../frontend
+**Step 3 — Frontend (new terminal)**
+```bash
+cd transactions-dispute-portal/frontend
 npm install
 npm run dev
 ```
