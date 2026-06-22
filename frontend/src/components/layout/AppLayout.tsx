@@ -58,7 +58,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               component="img"
               src="/logo.svg"
               alt="Resolve logo"
-              sx={{ width: 28, height: 28, borderRadius: 1.5 }}
+              sx={{ width: 28, height: 28 }}
             />
             <Typography
               variant="h6"
