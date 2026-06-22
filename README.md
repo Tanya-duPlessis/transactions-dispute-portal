@@ -1,6 +1,6 @@
 # Resolve — Transaction Dispute Portal
 
-> A production-grade full-stack web application that allows banking customers to view transactions and raise disputes, with a complete admin portal for managing the dispute resolution lifecycle.
+> A web application that allows banking customers to view transactions and raise disputes, with a complete admin portal for managing the dispute resolution lifecycle.
 
 [![CI](https://github.com/Tanya-duPlessis/transactions-dispute-portal/actions/workflows/ci.yml/badge.svg)](https://github.com/Tanya-duPlessis/transactions-dispute-portal/actions/workflows/ci.yml)
 
