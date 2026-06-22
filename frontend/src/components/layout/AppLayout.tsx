@@ -56,7 +56,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           >
             <Box
               component="img"
-              src="/favicon.svg"
+              src="/logo.svg"
               alt="Resolve logo"
               sx={{ width: 28, height: 28, borderRadius: 1.5 }}
             />
