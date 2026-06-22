@@ -41,23 +41,37 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar position="sticky" elevation={0}>
         <Toolbar sx={{ gap: 1, px: { xs: 2, md: 4 } }}>
-          {/* Wordmark */}
-          <Typography
+          {/* Logo + Wordmark */}
+          <Box
             component={Link}
             to={navItems[0].path}
-            variant="h6"
-            color="primary"
             sx={{
-              fontFamily: '"Space Grotesk", sans-serif',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
               textDecoration: 'none',
               mr: 3,
               flexShrink: 0,
             }}
           >
-            Resolve
-          </Typography>
+            <Box
+              component="img"
+              src="/favicon.svg"
+              alt="Resolve logo"
+              sx={{ width: 28, height: 28, borderRadius: 1.5 }}
+            />
+            <Typography
+              variant="h6"
+              color="primary"
+              sx={{
+                fontFamily: '"Space Grotesk", sans-serif',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Resolve
+            </Typography>
+          </Box>
 
           {/* Nav links */}
           <Box sx={{ display: 'flex', gap: 0.5, flex: 1 }}>
