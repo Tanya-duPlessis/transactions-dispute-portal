@@ -1,0 +1,338 @@
+{
+  "info": {
+    "name": "Resolve — Transaction Dispute Portal",
+    "description": "Complete API collection for the Resolve Transaction Dispute Portal. Import this file into Postman to test all endpoints.\n\n**Base URL:** https://transactions-dispute-portal-production.up.railway.app\n\n**Quick start:**\n1. Run the Login request under Auth\n2. Copy the accessToken from the response\n3. Paste it into the collection-level Authorization header\n4. All other requests will use it automatically",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://transactions-dispute-portal-production.up.railway.app/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login — Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', res.accessToken);",
+                  "  console.log('Token saved to collection variable');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@demo.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login — Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', res.accessToken);",
+                  "  console.log('Admin token saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@demo.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Password1\",\n  \"name\": \"New User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "category", "value": "FOOD", "disabled": true },
+                { "key": "dateFrom", "value": "2026-01-01", "disabled": true },
+                { "key": "dateTo", "value": "2026-12-31", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Transactions — Search by merchant",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions?search=Checkers",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions"],
+              "query": [{ "key": "search", "value": "Checkers" }]
+            }
+          }
+        },
+        {
+          "name": "List Transactions — Filter by category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions?category=FOOD",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions"],
+              "query": [{ "key": "category", "value": "FOOD" }]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", ":id"],
+              "variable": [{ "key": "id", "value": "paste-transaction-id-here" }]
+            }
+          }
+        },
+        {
+          "name": "Raise a Dispute on Transaction",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"UNAUTHORISED\",\n  \"description\": \"I did not make this transaction. My card may have been compromised.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transactions/:transactionId/disputes",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", ":transactionId", "disputes"],
+              "variable": [{ "key": "transactionId", "value": "paste-transaction-id-here" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Disputes",
+      "item": [
+        {
+          "name": "List Disputes (own — customer)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/disputes?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["disputes"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "PENDING", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List All Disputes (admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/disputes?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["disputes"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "search", "value": "Michelle", "disabled": true },
+                { "key": "status", "value": "PENDING", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Dispute by ID (with audit trail)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/disputes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["disputes", ":id"],
+              "variable": [{ "key": "id", "value": "paste-dispute-id-here" }]
+            }
+          }
+        },
+        {
+          "name": "Update Dispute Status — Move to Under Review (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"UNDER_REVIEW\",\n  \"note\": \"Dispute received and assigned to the review team.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/disputes/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["disputes", ":id", "status"],
+              "variable": [{ "key": "id", "value": "paste-dispute-id-here" }]
+            }
+          }
+        },
+        {
+          "name": "Update Dispute Status — Resolve (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESOLVED\",\n  \"note\": \"Confirmed invalid charge. Full refund processed to account.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/disputes/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["disputes", ":id", "status"],
+              "variable": [{ "key": "id", "value": "paste-dispute-id-here" }]
+            }
+          }
+        },
+        {
+          "name": "Update Dispute Status — Reject (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"note\": \"Merchant provided proof of transaction. Dispute rejected.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/disputes/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["disputes", ":id", "status"],
+              "variable": [{ "key": "id", "value": "paste-dispute-id-here" }]
+            }
+          }
+        },
+        {
+          "name": "Update Dispute Status — Re-open (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PENDING\",\n  \"note\": \"Customer provided new evidence. Re-opening for further investigation.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/disputes/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["disputes", ":id", "status"],
+              "variable": [{ "key": "id", "value": "paste-dispute-id-here" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    }
+  ]
+}
