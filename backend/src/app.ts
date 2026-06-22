@@ -12,6 +12,9 @@ import { setupSwagger } from './docs/swagger';
 
 const app = express();
 
+// Trust Railway's reverse proxy so rate limiting and IP detection work correctly
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(
   cors({

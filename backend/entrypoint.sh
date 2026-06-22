@@ -1,26 +1,18 @@
 #!/bin/sh
 set -e
 
-echo "Running database migrations..."
+echo "Resetting and applying migrations..."
+# Use migrate reset to ensure clean state, then deploy
+npx prisma migrate reset --force --skip-seed
+
+echo "Running migrations..."
 npx prisma migrate deploy
 
 echo "Generating Prisma client..."
 npx prisma generate
 
-echo "Checking if seed is needed..."
-USER_COUNT=$(node -e "
-const { PrismaClient } = require('@prisma/client');
-const p = new PrismaClient();
-p.user.count().then(c => { console.log(c); p.\$disconnect(); }).catch(() => { console.log(0); p.\$disconnect(); });
-")
-
-if [ "$USER_COUNT" = "0" ]; then
-  echo "Database is empty — running seed..."
-  node dist/prisma/seed.js 2>/dev/null || echo "Seed skipped or failed — continuing."
-  echo "Seed complete."
-else
-  echo "Database already has data — skipping seed."
-fi
+echo "Running seed..."
+node dist/prisma/seed.js 2>/dev/null || echo "Seed failed — continuing."
 
 echo "Starting server..."
 exec node dist/src/server.js

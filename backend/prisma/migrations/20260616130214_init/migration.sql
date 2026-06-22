@@ -26,6 +26,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Transaction" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "reference" TEXT NOT NULL,
     "amount" DECIMAL(10,2) NOT NULL,
     "merchant" TEXT NOT NULL,
     "category" "Category" NOT NULL,
@@ -67,7 +68,13 @@ CREATE TABLE "DisputeEvent" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Transaction_reference_key" ON "Transaction"("reference");
+
+-- CreateIndex
 CREATE INDEX "Transaction_userId_date_idx" ON "Transaction"("userId", "date");
+
+-- CreateIndex
+CREATE INDEX "Transaction_reference_idx" ON "Transaction"("reference");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Dispute_transactionId_key" ON "Dispute"("transactionId");
