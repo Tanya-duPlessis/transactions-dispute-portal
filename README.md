@@ -193,86 +193,11 @@ Every transition creates a `DisputeEvent` record in an ACID transaction.
 
 ### Dispute Creation Flow
 
-```mermaid
----
-config:
-  layout: elk
----
-flowchart TB
-    A([Customer clicks\nRaise Dispute]) --> B[Opens dispute modal]
-    B --> C[Fills reason\nand description]
-    C --> D[Confirms submission]
-    D --> E[POST /api/v1/transactions\n/:id/disputes]
-    E --> H{Validate JWT\n+ Zod schema}
-    H -->|Invalid| ERR1([422 Validation Error])
-    H -->|Valid| I{Transaction exists\nand belongs to user?}
-    I -->|No| ERR2([404 Not Found])
-    I -->|Yes| J{Dispute already\nexists?}
-    J -->|Yes| ERR3([409 Already Exists])
-    J -->|No| K[BEGIN TRANSACTION]
-    K --> L[INSERT Dispute\nPENDING]
-    L --> M[INSERT DisputeEvent]
-    M --> N[COMMIT]
-    N --> O[Email notification\nasync]
-    N --> P([201 Created])
-    P --> R([Toast: Dispute submitted])
-
-    classDef startEnd stroke:#818cf8,fill:#eef2ff
-    classDef process stroke:#38bdf8,fill:#f0f9ff
-    classDef decision stroke:#facc15,fill:#fefce8
-    classDef success stroke:#4ade80,fill:#f0fdf4
-    classDef error stroke:#f87171,fill:#fef2f2
-    classDef db stroke:#fb923c,fill:#fff7ed
-
-    class A,R startEnd
-    class B,C,D,E process
-    class H,I,J decision
-    class K,L,M,N,O db
-    class P,R success
-    class ERR1,ERR2,ERR3 error
-```
+![Dispute Creation Flow](diagrams/dispute-creation-flow.png)
 
 ### Authentication Flow
 
-```mermaid
----
-config:
-  layout: elk
----
-flowchart TB
-    A([User submits\nlogin form]) --> B[POST /api/v1/auth/login]
-    B --> C{Zod validates\ninput}
-    C -->|Invalid| ERR1([422 Validation Error])
-    C -->|Valid| D{User exists\nin DB?}
-    D -->|No| ERR2([401 Invalid Credentials])
-    D -->|Yes| E{bcrypt.compare\npassword}
-    E -->|No match| ERR2
-    E -->|Match| F[Sign access token\n15min expiry]
-    F --> G[Sign refresh token\n7 day expiry]
-    G --> H[Return access token\n+ set httpOnly cookie]
-    H --> J([User logged in])
-
-    J --> K([Access token expires])
-    K --> L[Axios interceptor\ndetects 401]
-    L --> M[POST /api/v1/auth/refresh\ncookie auto-sent]
-    M --> N{Refresh token\nvalid?}
-    N -->|No| ERR3([401 — Redirect to login])
-    N -->|Yes| P[Generate new\ntoken pair]
-    P --> Q[Return new tokens]
-    Q --> R([Original request\nretried silently])
-
-    classDef startEnd stroke:#818cf8,fill:#eef2ff
-    classDef process stroke:#38bdf8,fill:#f0f9ff
-    classDef decision stroke:#facc15,fill:#fefce8
-    classDef success stroke:#4ade80,fill:#f0fdf4
-    classDef error stroke:#f87171,fill:#fef2f2
-
-    class A,J,K,R startEnd
-    class B,F,G,H,L,M,P,Q process
-    class C,D,E,N decision
-    class J,R success
-    class ERR1,ERR2,ERR3 error
-```
+![Authentication Flow](diagrams/auth-flow.png)
 
 ---
 
