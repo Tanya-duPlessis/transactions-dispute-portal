@@ -23,7 +23,11 @@ const options: swaggerJsdoc.Options = {
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ['./src/routes/*.ts', './src/docs/*.yaml'],
+  apis: [
+    './src/routes/*.ts',
+    './dist/src/routes/*.js',
+    './src/docs/*.yaml',
+  ],
 };
 
 export const setupSwagger = (app: Express) => {
