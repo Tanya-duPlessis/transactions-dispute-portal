@@ -1,20 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2563EB"/>
-      <stop offset="50%" style="stop-color:#7C3AED"/>
-      <stop offset="100%" style="stop-color:#0891B2"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
-  <text
-    x="16"
-    y="23"
-    font-family="'Space Grotesk', 'Inter', sans-serif"
-    font-size="20"
-    font-weight="700"
-    fill="white"
-    text-anchor="middle"
-    letter-spacing="-0.5"
-  >R</text>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_411_6)">
+<path d="M24 0H8C3.58172 0 0 3.58172 0 8V24C0 28.4183 3.58172 32 8 32H24C28.4183 32 32 28.4183 32 24V8C32 3.58172 28.4183 0 24 0Z" fill="url(#paint0_linear_411_6)"/>
+<path d="M11.5016 23V9H17.5816C18.4616 9 19.2283 9.15333 19.8816 9.46C20.535 9.76667 21.0416 10.2 21.4016 10.76C21.7616 11.32 21.9416 11.98 21.9416 12.74V12.98C21.9416 13.82 21.7416 14.5 21.3416 15.02C20.9416 15.54 20.4483 15.92 19.8616 16.16V16.52C20.395 16.5467 20.8083 16.7333 21.1016 17.08C21.395 17.4133 21.5416 17.86 21.5416 18.42V23H18.9016V18.8C18.9016 18.48 18.815 18.22 18.6416 18.02C18.4816 17.82 18.2083 17.72 17.8216 17.72H14.1416V23H11.5016ZM14.1416 15.32H17.3016C17.9283 15.32 18.415 15.1533 18.7616 14.82C19.1216 14.4733 19.3016 14.02 19.3016 13.46V13.26C19.3016 12.7 19.1283 12.2533 18.7816 11.92C18.435 11.5733 17.9416 11.4 17.3016 11.4H14.1416V15.32Z" fill="white"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_411_6" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2563EB"/>
+<stop offset="0.5" stop-color="#7C3AED"/>
+<stop offset="1" stop-color="#0891B2"/>
+</linearGradient>
+<clipPath id="clip0_411_6">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
 </svg>
