@@ -205,31 +205,7 @@ All 9 customer accounts use `password123`. Customer emails follow the pattern `c
 
 ## Dispute State Machine
 
-```
-                    [Customer submits]
-                           │
-                           ▼
-                       PENDING
-                           │
-                  [Admin moves to review]
-                           │
-                           ▼
-                      UNDER_REVIEW
-                      │          │
-          [Admin resolves]    [Admin rejects]
-                      │          │
-                      ▼          ▼
-                  RESOLVED    REJECTED
-                      │          │
-              [Admin re-opens]   │
-                      └──────────┘
-                           │
-                           ▼
-                       PENDING
-
-Invalid transitions are rejected with INVALID_TRANSITION error.
-Every transition creates a DisputeEvent record (ACID transaction).
-```
+![Dispute State Machine](diagrams/dispute-state-machine.drawio.png)
 
 ---
 
