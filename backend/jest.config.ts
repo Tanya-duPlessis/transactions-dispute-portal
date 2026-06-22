@@ -12,6 +12,7 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov'],
   testTimeout: 30000,
+  maxWorkers: 1,
 };
 
 export default config;
