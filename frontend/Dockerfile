@@ -22,9 +22,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 8080
+EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost:${PORT:-8080} || exit 1
+  CMD wget -qO- http://localhost:80 || exit 1
 
 CMD ["/entrypoint.sh"]
