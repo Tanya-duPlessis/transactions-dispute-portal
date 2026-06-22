@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  NODE_ENV: production
+  PORT: "4000"
+  JWT_ACCESS_EXPIRY: 15m
+  JWT_REFRESH_EXPIRY: 7d
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resolve-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resolve-backend
+  template:
+    metadata:
+      labels:
+        app: resolve-backend
+    spec:
+      containers:
+        - name: resolve-backend
+          image: your-registry/resolve-backend:latest
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - configMapRef:
+                name: backend-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: resolve-secrets
+                  key: DATABASE_URL
+            - name: JWT_ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: resolve-secrets
+                  key: JWT_ACCESS_SECRET
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: resolve-secrets
+                  key: JWT_REFRESH_SECRET
+            - name: CLIENT_ORIGIN
+              valueFrom:
+                secretKeyRef:
+                  name: resolve-secrets
+                  key: CLIENT_ORIGIN
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resolve-backend
+spec:
+  selector:
+    app: resolve-backend
+  ports:
+    - port: 4000
+      targetPort: 4000
+  type: ClusterIP
