@@ -15,7 +15,7 @@ beforeAll(async () => {
   await prisma.transaction.deleteMany();
   await prisma.user.deleteMany();
 
-  const hash = await bcrypt.hash('password123', 10);
+  const hash = await bcrypt.hash('password123', 4); // low rounds for test speed
 
   const customer = await prisma.user.create({
     data: { email: 'customer@dispute-test.com', name: 'Customer', passwordHash: hash, role: 'CUSTOMER' },
@@ -112,8 +112,28 @@ describe('PATCH /api/v1/disputes/:id/status', () => {
   let disputeId: string;
 
   beforeAll(async () => {
-    const disputes = await prisma.dispute.findMany({ take: 1 });
-    disputeId = disputes[0].id;
+    // Create a fresh dispute specifically for status transition tests
+    const freshTx = await prisma.transaction.create({
+      data: {
+        userId: (await prisma.user.findFirst({ where: { role: 'CUSTOMER' } }))!.id,
+        reference: 'TXN-TEST-STATUS-001',
+        amount: 100,
+        merchant: 'Test Merchant',
+        category: 'OTHER',
+        date: new Date(),
+        description: 'Status test transaction',
+      },
+    });
+    const dispute = await prisma.dispute.create({
+      data: {
+        transactionId: freshTx.id,
+        userId: (await prisma.user.findFirst({ where: { role: 'CUSTOMER' } }))!.id,
+        reason: 'OTHER',
+        description: 'Status transition test dispute.',
+        status: 'PENDING',
+      },
+    });
+    disputeId = dispute.id;
   });
 
   it('admin can advance dispute to UNDER_REVIEW', async () => {
