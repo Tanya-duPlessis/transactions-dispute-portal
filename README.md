@@ -18,7 +18,9 @@
 
 ## Quick Start
 
-The entire stack runs with a single command. No manual setup required.
+### Option 1 — Docker (recommended)
+
+Requires Docker Desktop or Rancher Desktop to be running.
 
 ```bash
 git clone https://github.com/Tanya-duPlessis/transactions-dispute-portal.git
@@ -30,6 +32,34 @@ docker-compose up
 The app will be available at **http://localhost:3000**
 
 Migrations run and the database seeds automatically on first startup.
+
+### Option 2 — Run locally without Docker
+
+Requires Node.js 22+ and PostgreSQL installed locally.
+
+```bash
+git clone https://github.com/Tanya-duPlessis/transactions-dispute-portal.git
+cd transactions-dispute-portal
+
+# Start a local PostgreSQL database (e.g. via Homebrew)
+brew services start postgresql@16
+createdb disputes_db
+
+# Set up backend
+cd backend
+cp .env.example .env        # edit DATABASE_URL to match your local postgres
+npm install
+npx prisma migrate deploy
+npm run db:seed
+npm run dev
+
+# In a new terminal — set up frontend
+cd ../frontend
+npm install
+npm run dev
+```
+
+The app will be available at **http://localhost:3000**
 
 ---
 
