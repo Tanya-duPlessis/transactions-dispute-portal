@@ -12,18 +12,19 @@ RUN npm run build
 # Stage 2: Serve with nginx
 FROM nginx:alpine AS production
 
-# Non-root user
-RUN addgroup -g 1001 -S nginx-app && adduser -S nginx-app -u 1001
-
 # Copy built assets
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Custom nginx config for SPA routing
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+# Entrypoint that sets port dynamically from $PORT env var
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost:80 || exit 1
+  CMD wget -qO- http://localhost:${PORT:-8080} || exit 1
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/entrypoint.sh"]
