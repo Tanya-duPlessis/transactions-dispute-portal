@@ -20,7 +20,7 @@
 
 ### Option 1 — Docker (recommended)
 
-Requires Docker Desktop or Rancher Desktop to be running.
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) or [Rancher Desktop](https://rancherdesktop.io/) to be running.
 
 ```bash
 git clone https://github.com/Tanya-duPlessis/transactions-dispute-portal.git
