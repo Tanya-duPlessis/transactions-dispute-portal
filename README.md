@@ -193,58 +193,11 @@ Every transition creates a `DisputeEvent` record in an ACID transaction.
 
 ### Dispute Creation Flow
 
-```mermaid
-sequenceDiagram
-    participant C as Customer
-    participant FE as Frontend
-    participant API as Express API
-    participant DB as PostgreSQL
-    participant N as Notification
-
-    C->>FE: Clicks "Raise dispute" on transaction
-    FE->>FE: Opens dispute modal (step 1: details)
-    C->>FE: Fills reason + description, clicks Next
-    FE->>FE: Shows confirmation step
-    C->>FE: Confirms submission
-    FE->>API: POST /api/v1/transactions/:id/disputes
-    API->>API: Validate JWT + Zod schema
-    API->>DB: Check transaction exists and belongs to user
-    API->>DB: Check no existing dispute for transaction
-    API->>DB: BEGIN TRANSACTION
-    API->>DB: INSERT Dispute (status: PENDING)
-    API->>DB: INSERT DisputeEvent (PENDING → PENDING, actor: customer)
-    API->>DB: COMMIT
-    API->>N: sendDisputeConfirmationEmail() [async, non-blocking]
-    API->>FE: 201 Created { id, status: PENDING }
-    FE->>FE: Close modal, refresh transaction list
-    FE->>C: Toast: "Dispute submitted successfully"
-```
+![Dispute Creation Flow](diagrams/dispute-creation-flow.png)
 
 ### Authentication Flow
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant API as Express API
-    participant DB as PostgreSQL
-
-    C->>API: POST /api/v1/auth/login { email, password }
-    API->>DB: SELECT user WHERE email = ?
-    API->>API: bcrypt.compare(password, hash)
-    API->>API: jwt.sign(payload, ACCESS_SECRET, 15m)
-    API->>API: jwt.sign(payload, REFRESH_SECRET, 7d)
-    API->>C: { accessToken } + Set-Cookie: refreshToken (httpOnly)
-
-    Note over C,API: Later — access token expires
-
-    C->>API: POST /api/v1/auth/refresh (cookie sent automatically)
-    API->>API: jwt.verify(refreshToken, REFRESH_SECRET)
-    API->>DB: Verify user still exists
-    API->>API: Generate new token pair
-    API->>C: { accessToken } + new refreshToken cookie
-
-    Note over C,API: Axios interceptor handles this transparently
-```
+![Authentication Flow](diagrams/auth-flow.png)
 
 ---
 
