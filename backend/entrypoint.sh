@@ -1,18 +1,21 @@
 #!/bin/sh
 set -e
 
-echo "Resetting and applying migrations..."
-# Use migrate reset to ensure clean state, then deploy
-npx prisma migrate reset --force --skip-seed
+echo "Dropping and recreating database schema..."
+node -e "
+const { Client } = require('pg');
+const client = new Client({ connectionString: process.env.DATABASE_URL });
+client.connect()
+  .then(() => client.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;'))
+  .then(() => { console.log('Schema reset complete.'); client.end(); })
+  .catch(e => { console.error('Reset failed:', e.message); client.end(); process.exit(1); });
+"
 
 echo "Running migrations..."
 npx prisma migrate deploy
 
-echo "Generating Prisma client..."
-npx prisma generate
-
 echo "Running seed..."
-node dist/prisma/seed.js 2>/dev/null || echo "Seed failed — continuing."
+node dist/prisma/seed.js
 
 echo "Starting server..."
 exec node dist/src/server.js
