@@ -207,6 +207,9 @@ All 9 customer accounts use `password123`. Customer emails follow the pattern `c
 
 ![Dispute State Machine](diagrams/dispute-state-machine.drawio.png)
 
+Invalid transitions are rejected with an `INVALID_TRANSITION` error.
+Every transition creates a `DisputeEvent` record in an ACID transaction.
+
 ---
 
 ## Sequence Diagrams
