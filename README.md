@@ -192,33 +192,7 @@ All 9 customer accounts use `password123`. Customer emails follow the pattern `c
 
 ## Entity Relationship Diagram
 
-```
-┌─────────────┐       ┌─────────────────────┐       ┌──────────────────┐
-│    User     │       │     Transaction      │       │     Dispute      │
-│─────────────│       │─────────────────────│       │──────────────────│
-│ id (PK)     │──┐    │ id (PK)             │──┐    │ id (PK)          │──┐
-│ email       │  │    │ userId (FK)    ──────┘  │    │ transactionId(FK)│  │
-│ name        │  └───▶│ reference (unique)  │   └───▶│ userId (FK)      │  │
-│ passwordHash│       │ amount              │        │ reason           │  │
-│ role        │       │ merchant            │        │ description      │  │
-│ createdAt   │       │ category            │        │ status           │  │
-└─────────────┘       │ date                │        │ createdAt        │  │
-                      │ description         │        │ updatedAt        │  │
-                      │ createdAt           │        └──────────────────┘  │
-                      └─────────────────────┘                              │
-                                                                           │
-                      ┌─────────────────────┐                             │
-                      │    DisputeEvent     │                             │
-                      │─────────────────────│                             │
-                      │ id (PK)             │                             │
-                      │ disputeId (FK) ─────────────────────────────────▶│
-                      │ fromStatus          │
-                      │ toStatus            │
-                      │ note                │
-                      │ actorId (FK → User) │
-                      │ createdAt           │
-                      └─────────────────────┘
-```
+![ERD](diagrams/erd.png)
 
 **Indexes:**
 - `Transaction(userId, date)` — composite, covers paginated transaction list sorted by date
