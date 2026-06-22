@@ -86,6 +86,43 @@ All 9 customer accounts use `password123`. Customer emails follow the pattern `c
 
 ---
 
+## Screenshots
+
+### Customer — Login
+![Login](screenshots/01-login.png)
+
+### Customer — Transactions
+![Transactions](screenshots/03-transactions-list.png)
+
+### Customer — Transaction Drawer
+![Transaction Drawer](screenshots/04-transaction-drawer.png)
+
+### Customer — Raise a Dispute
+![Dispute Modal](screenshots/08-dispute-modal-confirm.png)
+
+### Customer — Dispute Submitted
+![Dispute Submitted](screenshots/09-dispute-submitted-success.png)
+
+### Customer — Dispute Detail with Timeline
+![Dispute Detail](screenshots/11-dispute-detail-customer.png)
+
+### Customer — My Disputes
+![My Disputes](screenshots/12-my-disputes-list.png)
+
+### Dark Mode
+![Dark Mode](screenshots/14-transactions-dark-mode.png)
+
+### Admin — All Disputes Dashboard
+![Admin Dashboard](screenshots/18-admin-disputes-dashboard.png)
+
+### Admin — Dispute Detail with Status Update
+![Admin Dispute Detail](screenshots/21-admin-dispute-updated.png)
+
+### Admin — Full Audit Timeline (Resolved)
+![Resolved Timeline](screenshots/26-dispute-detail-seeded-resolved.png)
+
+---
+
 ## Features
 
 **Customer**
