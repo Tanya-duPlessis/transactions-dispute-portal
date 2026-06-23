@@ -8,6 +8,7 @@ RUN npm ci
 
 COPY . .
 RUN npm run build
+RUN ls -la dist/
 
 # Stage 2: Serve with nginx
 FROM nginx:alpine AS production
