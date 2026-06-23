@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
@@ -37,6 +37,25 @@ const DEMO_ACCOUNTS = [
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [pulsing, setPulsing] = useState(false);
+
+  useEffect(() => {
+    const trigger = () => {
+      // First pulse
+      setPulsing(true);
+      setTimeout(() => {
+        setPulsing(false);
+        // Second pulse after a short gap
+        setTimeout(() => {
+          setPulsing(true);
+          setTimeout(() => setPulsing(false), 300);
+        }, 200);
+      }, 300);
+    };
+    const timeout = setTimeout(trigger, 1000);
+    const interval = setInterval(trigger, 3000);
+    return () => { clearTimeout(timeout); clearInterval(interval); };
+  }, []);
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
   const { mode, toggleTheme } = useThemeMode();
@@ -237,7 +256,11 @@ export default function LoginPage() {
                     cursor: 'pointer',
                     borderRadius: 2,
                     fontSize: '0.75rem',
-                    borderColor: 'divider',
+                    borderColor: pulsing ? '#7C3AED' : 'divider',
+                    color: pulsing ? '#7C3AED' : 'text.secondary',
+                    bgcolor: pulsing ? '#F5F3FF' : 'transparent',
+                    transform: pulsing ? 'scale(1.04)' : 'scale(1)',
+                    transition: 'all 0.3s ease',
                     '&:hover': {
                       borderColor: '#7C3AED',
                       color: '#7C3AED',
